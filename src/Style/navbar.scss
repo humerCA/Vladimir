@@ -1,0 +1,27 @@
+@use "../index.scss";
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  margin: 10px 10px;
+  z-index: 1;
+  user-select: none;
+
+  &__user-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  &__user-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-right: 10px;
+    font-size: smaller;
+    line-height: 0.8;
+  }
+}

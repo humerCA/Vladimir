@@ -1,0 +1,363 @@
+import React, { useEffect, useState } from "react";
+import "../Style/sidebar.scss";
+import { NavLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { openSidebar } from "../Redux/StateManagement/sidebar";
+import { toggleSidebar } from "../Redux/StateManagement/sidebar";
+
+//Img
+import VladimirLogoSmall from "../Img/VladimirSmall.png";
+import MisLogo from "../Img/MIS LOGO.png";
+
+// Components
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  SvgIcon,
+  Collapse,
+  Divider,
+  Button,
+  IconButton,
+  Typography,
+  Tooltip,
+  tooltipClasses,
+  styled,
+} from "@mui/material";
+import Zoom from "@mui/material/Zoom";
+
+// Icons
+import {
+  Close,
+  Dashboard,
+  ListAlt,
+  AccountBox,
+  LocalOffer,
+  ManageAccountsSharp,
+  Category,
+  Inventory2Rounded,
+  NoteAddRounded,
+  FormatListBulletedRounded,
+  AssignmentIndRounded,
+  ClassRounded,
+  PlaylistRemoveRounded,
+  SummarizeRounded,
+} from "@mui/icons-material";
+
+const Sidebar = () => {
+  const [masterlistCollapse, setMasterlistCollapse] = useState(false);
+  const [requestCollapse, setRequestCollapse] = useState(false);
+  const [reportCollapse, setReportCollapse] = useState(false);
+
+  const dispatch = useDispatch();
+  const collapse = useSelector((state) => state.sidebar.open);
+
+  const handleMenuCollapse = () => {
+    dispatch(toggleSidebar());
+  };
+
+  const closeCollapse = () => {
+    setMasterlistCollapse(false);
+    setRequestCollapse(false);
+    setReportCollapse(false);
+  };
+
+  const MENU_LIST = [
+    {
+      label: "Dashboard",
+      icon: Dashboard,
+      path: "/",
+      permission: [],
+      setter: closeCollapse,
+    },
+    {
+      label: "Masterlist",
+      icon: ListAlt,
+      path: "/masterlist",
+      permission: [],
+      children: [
+        {
+          label: "User Accounts",
+          icon: AccountBox,
+          path: "/masterlist/user-accounts",
+          permission: [],
+        },
+        {
+          label: "Service Provider",
+          icon: ManageAccountsSharp,
+          path: "/masterlist/service-provider",
+          permission: [],
+        },
+        {
+          label: "Category",
+          icon: Category,
+          path: "/masterlist/category",
+          permission: [],
+        },
+        {
+          label: "Supplier",
+          icon: Inventory2Rounded,
+          path: "/masterlist/supplier",
+          permission: [],
+        },
+        {
+          label: "Create Asset Registration",
+          icon: NoteAddRounded,
+          path: "masterlist/create-asset-registration",
+          permission: [],
+        },
+      ],
+      open: masterlistCollapse,
+      setter: () => {
+        setMasterlistCollapse(!masterlistCollapse);
+        setRequestCollapse(false);
+        setReportCollapse(false);
+        dispatch(openSidebar());
+      },
+    },
+    {
+      label: "Asset for Tagging",
+      icon: LocalOffer,
+      path: "/asset-for-tagging",
+      permission: [],
+      setter: closeCollapse,
+    },
+    {
+      label: "Asset List",
+      icon: FormatListBulletedRounded,
+      path: "/asset-list",
+      permission: [],
+      setter: closeCollapse,
+    },
+    {
+      label: "Request",
+      icon: AssignmentIndRounded,
+      path: "/request",
+      permission: [],
+      children: [
+        {
+          label: "Transfer",
+          icon: AccountBox,
+          path: "/request/transfer",
+          permission: [],
+        },
+        {
+          label: "Pull Out",
+          icon: ManageAccountsSharp,
+          path: "/request/pull-out",
+          permission: [],
+        },
+        {
+          label: "Evaluation",
+          icon: Category,
+          path: "/request/evaluation",
+          permission: [],
+        },
+      ],
+      open: requestCollapse,
+      setter: () => {
+        setRequestCollapse(!requestCollapse);
+        setMasterlistCollapse(false);
+        setReportCollapse(false);
+        dispatch(openSidebar());
+      },
+    },
+    {
+      label: "On Hand in Process",
+      icon: ClassRounded,
+      path: "/on-hand-in-process",
+      permission: [],
+      setter: closeCollapse,
+    },
+    {
+      label: "Disposal",
+      icon: PlaylistRemoveRounded,
+      path: "/disposal",
+      permission: [],
+      setter: closeCollapse,
+    },
+    {
+      label: "Reports",
+      icon: SummarizeRounded,
+      path: "/reports",
+      permission: [],
+      children: [
+        {
+          label: "Report 1",
+          icon: SummarizeRounded,
+          path: "/reports/report1",
+          permission: [],
+        },
+        {
+          label: "Report 2",
+          icon: SummarizeRounded,
+          path: "/reports/report2",
+          permission: [],
+        },
+        {
+          label: "Report 3",
+          icon: SummarizeRounded,
+          path: "/reports/report3",
+          permission: [],
+        },
+      ],
+      open: reportCollapse,
+      setter: () => {
+        setReportCollapse(!reportCollapse);
+        setMasterlistCollapse(false);
+        setRequestCollapse(false);
+        dispatch(openSidebar());
+      },
+    },
+  ];
+
+  useEffect(() => {
+    if (!collapse) {
+      closeCollapse();
+    }
+  }, [collapse]);
+
+  return (
+    <>
+      <Box className={`sidebar ${collapse ? "" : "collapsed"}`}>
+        <Box className="sidebar__logo-container">
+          {collapse ? (
+            <IconButton
+              className="sidebar__closeBtn"
+              sx={{ position: "absolute", right: 3, top: 3 }}
+              onClick={handleMenuCollapse}
+            >
+              <Close />
+            </IconButton>
+          ) : null}
+          <img
+            src={VladimirLogoSmall}
+            alt="Vladimir Logo"
+            style={{
+              width: "40px",
+            }}
+          />
+
+          <Typography
+            color="secondary"
+            sx={{
+              pl: 2.5,
+              // fontFamily: "Agency FB",
+              // fontFamily: "Britannic",
+              // fontFamily: "Copperplate Gothic",
+              fontFamily: "Gill Sans MT",
+              fontSize: "25px",
+              letterSpacing: "5px",
+              zIndex: 0,
+              userSelect: "none",
+            }}
+          >
+            VLADIMIR
+          </Typography>
+        </Box>
+
+        <Box className="sidebar__menus">
+          <List sx={{}}>
+            {MENU_LIST.map((item) => {
+              return (
+                <ListItem
+                  key={item.path}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    paddingLeft: "10px",
+                  }}
+                  disablePadding
+                  dense
+                >
+                  <Tooltip
+                    title={!collapse && item.label}
+                    TransitionComponent={Zoom}
+                    placement="right"
+                    arrow
+                  >
+                    <ListItemButton
+                      className="sidebar__menu-btn"
+                      component={NavLink}
+                      to={item.path}
+                      sx={{
+                        width: collapse ? "220px" : "85%",
+                        borderRadius: "12px",
+                        px: 0,
+                        transition: "0.2s ease-in-out",
+                      }}
+                      onClick={item?.setter}
+                    >
+                      <ListItemIcon sx={{ pl: 2, py: 1 }}>
+                        <SvgIcon component={item.icon} />
+                      </ListItemIcon>
+                      {collapse && (
+                        <ListItemText
+                          primary={item.label}
+                          sx={{ whiteSpace: "nowrap" }}
+                        />
+                      )}
+                    </ListItemButton>
+                  </Tooltip>
+
+                  {Boolean(item.children?.length) && (
+                    <Collapse
+                      in={item.open}
+                      timeout="auto"
+                      unmountOnExit
+                      sx={{ width: "100%" }}
+                    >
+                      <List component="div" className="sidebar__menu-list">
+                        {item.children.map((childItem, index) => {
+                          return (
+                            <ListItemButton
+                              className="sidebar__menu-btn-list"
+                              disable
+                              key={childItem.path}
+                              component={NavLink}
+                              to={childItem.path}
+                              sx={{
+                                width: "89%",
+                                ml: 2,
+                                borderRadius: "12px",
+                                px: 0,
+                              }}
+                              dense
+                            >
+                              <ListItemIcon sx={{ pl: 2, py: 0.5 }}>
+                                <SvgIcon component={childItem.icon} />
+                              </ListItemIcon>
+                              <ListItemText primary={childItem.label} />
+                            </ListItemButton>
+                          );
+                        })}
+                      </List>
+                      <Divider sx={{ mb: "10px" }} />
+                    </Collapse>
+                  )}
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
+
+        <Box className="sidebar__copyright">
+          <img src={MisLogo} alt="MIS-Logo" width="50" />
+          {collapse && (
+            <p>
+              Powered By MIS All rights reserved <br />
+              Copyrights © 2021
+            </p>
+          )}
+        </Box>
+      </Box>
+    </>
+  );
+};
+
+export default Sidebar;
