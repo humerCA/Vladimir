@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import "../Style/navbar.scss";
 import PropTypes from "prop-types";
-import {
-  Link as RouterLink,
-  Route,
-  Routes,
-  MemoryRouter,
-  useLocation,
-} from "react-router-dom";
+import { vladimirAPI } from "../Api/vladimirAPI";
+
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSidebar } from "../Redux/StateManagement/sidebar";
 
-import { MenuRounded, ArrowBackIosRounded } from "@mui/icons-material";
+import {
+  MenuRounded,
+  ArrowBackIosRounded,
+  Help,
+  Info,
+  Settings,
+  Logout,
+  Menu as MenuIcon,
+} from "@mui/icons-material";
+
 import {
   Avatar,
   Box,
@@ -20,6 +25,14 @@ import {
   Typography,
   Breadcrumbs,
   Link,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Fade,
+  ListItemText,
+  Divider,
+  Tooltip,
+  Zoom,
 } from "@mui/material";
 
 const breadcrumbNameMap = {
@@ -82,46 +95,78 @@ const Navbar = () => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
+  const userLogout = useNavigate();
+
+  // const Logoutbtn = () => {
+  //   localStorage.removeItem("username");
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("department_name");
+  //   userLogout("/login");
+  // };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const onLogoutHandler = async (data) => {
+    try {
+      const res = await vladimirAPI.post("/auth/logout");
+      console.log(res.data);
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      localStorage.removeItem("department_name");
+      userLogout("/login");
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   return (
     <>
       <Box>
         <Box className="navbar">
           <Box>
-            {collapse
-              ? ("unCollapsed",
-                (
-                  <IconButton onClick={handleMenuCollapse}>
-                    <ArrowBackIosRounded />
-                  </IconButton>
-                ))
-              : ("collapsed",
-                (
-                  <IconButton onClick={handleMenuCollapse}>
-                    <MenuRounded />
-                  </IconButton>
-                ))}
+            {collapse ? (
+              <IconButton onClick={handleMenuCollapse}>
+                <ArrowBackIosRounded />
+              </IconButton>
+            ) : (
+              <IconButton onClick={handleMenuCollapse}>
+                <MenuRounded />
+              </IconButton>
+            )}
           </Box>
 
           <Box className="navbar__user-container">
             <Box className="navbar__user-wrapper">
               <Typography sx={{ fontWeight: "bold" }} color="primary">
-                Username
+                {localStorage.getItem("username") &&
+                  localStorage.getItem("username").charAt(0).toUpperCase() +
+                    localStorage.getItem("username").slice(1)}
               </Typography>
-              <span style={{ fontStyle: "italic" }}>Admin</span>
+              <span style={{ fontStyle: "italic" }}>
+                {localStorage.getItem("department_name")}
+              </span>
             </Box>
             <Box>
-              <Avatar>V</Avatar>
+              <Tooltip title="Settings" TransitionComponent={Zoom} arrow>
+                <IconButton onClick={handleOpen}>
+                  <Avatar sx={{ cursor: "pointer" }}>
+                    {localStorage.getItem("username").charAt(0).toUpperCase()}
+                  </Avatar>
+                </IconButton>
+              </Tooltip>
             </Box>
           </Box>
         </Box>
 
         <Breadcrumbs aria-label="breadcrumb" sx={{ ml: 3, userSelect: "none" }}>
-          <LinkRouter
-            underline="hover"
-            color="inherit"
-            to="/"
-            // onClick={handleMenuCollapse}
-          >
+          <LinkRouter underline="hover" color="inherit" to="/">
             Home
           </LinkRouter>
           {pathnames.map((value, index) => {
@@ -129,7 +174,11 @@ const Navbar = () => {
             const to = `/${pathnames.slice(0, index + 1).join("/")}`;
 
             return last ? (
-              <Typography color="primary" key={to}>
+              <Typography
+                color="secondary"
+                sx={{ fontWeight: "bold" }}
+                key={to}
+              >
                 {breadcrumbNameMap[to]}
               </Typography>
             ) : (
@@ -140,6 +189,43 @@ const Navbar = () => {
           })}
         </Breadcrumbs>
       </Box>
+
+      <Menu
+        PaperProps={{
+          className: "navbar__menu",
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Fade}
+        disablePortal
+      >
+        <MenuItem onClick={handleClose} dense>
+          <ListItemIcon>
+            <Help />
+          </ListItemIcon>
+          <ListItemText>Help</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleClose} dense>
+          <ListItemIcon>
+            <Info />
+          </ListItemIcon>
+          <ListItemText>About</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleClose} dense>
+          <ListItemIcon>
+            <Settings />
+          </ListItemIcon>
+          <ListItemText>Settings</ListItemText>
+        </MenuItem>
+        <Divider sx={{ mx: 2 }} />
+        <MenuItem onClick={onLogoutHandler} dense>
+          <ListItemIcon>
+            <Logout />
+          </ListItemIcon>
+          <ListItemText>Logout</ListItemText>
+        </MenuItem>
+      </Menu>
     </>
   );
 };

@@ -24,4 +24,11 @@
     font-size: smaller;
     line-height: 0.8;
   }
+
+  &__menu {
+    min-width: 150px;
+    margin-top: 10px;
+    background: index.$text;
+    color: index.$background;
+  }
 }

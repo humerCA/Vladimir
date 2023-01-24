@@ -13,4 +13,5 @@ export const LoginRoutes = () => {
   const token = localStorage.getItem("token");
   let auth = { token };
   return auth.token ? <Navigate to="/" /> : <LandingPage />;
+  // return <Outlet />;
 };

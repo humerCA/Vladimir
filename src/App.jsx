@@ -117,24 +117,52 @@ const router = createBrowserRouter([
 
 const theme = createTheme({
   palette: {
+    // primary: {
+    //   light: "#33bdc3",
+    //   main: "#00ADB5",
+    //   dark: "#00797e",
+    //   contrastText: "#222831",
+    // },
+
+    // secondary: {
+    //   light: "#60646b",
+    //   main: "#393E46",
+    //   dark: "#272b31",
+    //   contrastText: "#EEEEEE",
+    // },
+
+    // text: {
+    //   light: "#4e535a",
+    //   main: "#222831",
+    //   dark: "#171c22",
+    //   contrastText: "#EEEEEE",
+    // },
+
+    // background: {
+    //   light: "#f1f1f1",
+    //   main: "#EEEEEE",
+    //   dark: "#a6a6a6",
+    //   contrastText: "#222831",
+    // },
+
     primary: {
-      light: "#33bdc3",
-      main: "#00ADB5",
-      dark: "#00797e",
+      light: "#fabb5b",
+      main: "#f9aa33",
+      dark: "#ae7623",
       contrastText: "#222831",
     },
 
     secondary: {
-      light: "#60646b",
-      main: "#393E46",
-      dark: "#272b31",
+      light: "#5c6d77",
+      main: "#344955",
+      dark: "#24333b",
       contrastText: "#EEEEEE",
     },
 
     text: {
-      light: "#4e535a",
-      main: "#222831",
-      dark: "#171c22",
+      light: "#565e60",
+      main: "#2C3639",
+      dark: "#1e2527",
       contrastText: "#EEEEEE",
     },
 

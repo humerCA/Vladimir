@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../Style/sidebar.scss";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { openSidebar } from "../Redux/StateManagement/sidebar";
 import { toggleSidebar } from "../Redux/StateManagement/sidebar";
 
 //Img
-import VladimirLogoSmall from "../Img/VladimirSmall.png";
+import VladimirLogoSmally from "../Img/VladimirSmally.png";
 import MisLogo from "../Img/MIS LOGO.png";
 
 // Components
@@ -20,12 +20,9 @@ import {
   SvgIcon,
   Collapse,
   Divider,
-  Button,
   IconButton,
   Typography,
   Tooltip,
-  tooltipClasses,
-  styled,
 } from "@mui/material";
 import Zoom from "@mui/material/Zoom";
 
@@ -214,16 +211,32 @@ const Sidebar = () => {
     },
   ];
 
+  const { pathname } = useLocation();
+  const location = useLocation();
+  console.log(location);
+
   useEffect(() => {
     if (!collapse) {
       closeCollapse();
     }
-  }, [collapse]);
+
+    if (pathname === "/") {
+      closeCollapse();
+    }
+
+    if (collapse && pathname.match(/masterlist/)) {
+      setMasterlistCollapse(true);
+    } else if (collapse && pathname.match(/request/)) {
+      setRequestCollapse(true);
+    } else if (collapse && pathname.match(/reports/)) {
+      setReportCollapse(true);
+    }
+  }, [collapse, pathname]);
 
   return (
     <>
       <Box className={`sidebar ${collapse ? "" : "collapsed"}`}>
-        <Box className="sidebar__logo-container">
+        <Box>
           {collapse ? (
             <IconButton
               className="sidebar__closeBtn"
@@ -233,34 +246,36 @@ const Sidebar = () => {
               <Close />
             </IconButton>
           ) : null}
-          <img
-            src={VladimirLogoSmall}
-            alt="Vladimir Logo"
-            style={{
-              width: "40px",
-            }}
-          />
+          <Box className="sidebar__logo-container">
+            <img
+              src={VladimirLogoSmally}
+              alt="Vladimir Logo"
+              style={{
+                width: "40px",
+              }}
+            />
 
-          <Typography
-            color="secondary"
-            sx={{
-              pl: 2.5,
-              // fontFamily: "Agency FB",
-              // fontFamily: "Britannic",
-              // fontFamily: "Copperplate Gothic",
-              fontFamily: "Gill Sans MT",
-              fontSize: "25px",
-              letterSpacing: "5px",
-              zIndex: 0,
-              userSelect: "none",
-            }}
-          >
-            VLADIMIR
-          </Typography>
+            <Typography
+              color="secondary"
+              sx={{
+                zIndex: 0,
+                // fontFamily: "Agency FB",
+                // fontFamily: "Britannic",
+                // fontFamily: "Copperplate Gothic",
+                fontFamily: "Gill Sans MT",
+                fontSize: "22px",
+                letterSpacing: "6px",
+                pl: 2.5,
+                userSelect: "none",
+              }}
+            >
+              VLADIMIR
+            </Typography>
+          </Box>
         </Box>
 
         <Box className="sidebar__menus">
-          <List sx={{}}>
+          <List>
             {MENU_LIST.map((item) => {
               return (
                 <ListItem
@@ -270,7 +285,8 @@ const Sidebar = () => {
                     justifyContent: "center",
                     flexDirection: "column",
                     alignItems: "flex-start",
-                    paddingLeft: "10px",
+                    padding: 0,
+                    px: "10px",
                   }}
                   disablePadding
                   dense
@@ -286,14 +302,16 @@ const Sidebar = () => {
                       component={NavLink}
                       to={item.path}
                       sx={{
-                        width: collapse ? "220px" : "85%",
+                        width: collapse ? "225px" : "98%",
+                        display: "flex",
+                        justifyContent: "flex-start",
                         borderRadius: "12px",
                         px: 0,
                         transition: "0.2s ease-in-out",
                       }}
                       onClick={item?.setter}
                     >
-                      <ListItemIcon sx={{ pl: 2, py: 1 }}>
+                      <ListItemIcon sx={{ px: 1.9, py: 1 }}>
                         <SvgIcon component={item.icon} />
                       </ListItemIcon>
                       {collapse && (
@@ -312,7 +330,11 @@ const Sidebar = () => {
                       unmountOnExit
                       sx={{ width: "100%" }}
                     >
-                      <List component="div" className="sidebar__menu-list">
+                      <List
+                        component="div"
+                        className="sidebar__menu-list"
+                        sx={{ pt: 0.5 }}
+                      >
                         {item.children.map((childItem, index) => {
                           return (
                             <ListItemButton
@@ -337,7 +359,7 @@ const Sidebar = () => {
                           );
                         })}
                       </List>
-                      <Divider sx={{ mb: "10px" }} />
+                      <Divider sx={{ mb: "10px", mx: "15px" }} />
                     </Collapse>
                   )}
                 </ListItem>
@@ -347,7 +369,13 @@ const Sidebar = () => {
         </Box>
 
         <Box className="sidebar__copyright">
-          <img src={MisLogo} alt="MIS-Logo" width="50" />
+          <img
+            src={MisLogo}
+            alt="MIS-Logo"
+            style={{
+              width: "50px",
+            }}
+          />
           {collapse && (
             <p>
               Powered By MIS All rights reserved <br />

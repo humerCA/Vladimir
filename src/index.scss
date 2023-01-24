@@ -1,7 +1,13 @@
-$primary: #00adb5;
-$secondary: #393e46;
+// $primary: #00adb5;
+// $secondary: #393e46;
+// $background: #eeeeee;
+// $text: #222831;
+// $scrollBar: #a6a6a6;
+
+$primary: #f9aa33;
+$secondary: #344955;
 $background: #eeeeee;
-$text: #222831;
+$text: #2c3639;
 $scrollBar: #a6a6a6;
 
 :root {
@@ -41,6 +47,15 @@ $scrollBar: #a6a6a6;
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(139, 139, 139);
+}
+
+// Autofill Background
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+  transition-delay: background-color 5000s, color 5000s;
 }
 
 body {

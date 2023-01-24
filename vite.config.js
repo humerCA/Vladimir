@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     // port: 3030,
-    host: false,
+    host: true,
   },
   define: {
     "process.env.PORT": `${process.env.PORT}`,
