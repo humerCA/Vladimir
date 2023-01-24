@@ -15,7 +15,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 50px 25px 45px 20px;
+    padding: 40px 17px;
   }
 
   & > img {
@@ -30,6 +30,8 @@
     color: index.$text;
     width: 100%;
     overflow-x: hidden;
+    overflow-y: overlay;
+    transition: 0.3s ease-in-out;
   }
 
   &__menu-btn.active {
@@ -71,15 +73,17 @@
 
   &__copyright {
     text-align: center;
-    margin-top: 20px;
-    padding: 10px;
+    line-height: 10px;
     width: 100%;
     user-select: none;
+    margin-top: 20px;
+    margin-bottom: 20px;
 
     & > p {
       font-size: 8px;
       color: index.$text;
       white-space: nowrap;
+      margin: 0;
     }
   }
 
@@ -87,6 +91,9 @@
     @media (min-width: 801px) {
       display: none !important;
     }
+  }
+
+  &__textfield {
   }
 
   @media (max-width: 800px) {
@@ -104,6 +111,6 @@
   margin: 0;
 
   @media (min-width: 801px) {
-    width: 80px;
+    width: 75px;
   }
 }
