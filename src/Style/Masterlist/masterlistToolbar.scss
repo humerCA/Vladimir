@@ -1,0 +1,27 @@
+@use "../../index.scss";
+
+.masterlist-toolbar {
+  position: relative;
+  padding: 10px;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+  }
+
+  &__title {
+    display: flex;
+    gap: 10px;
+    @media (max-width: 570px) {
+      display: none;
+    }
+  }
+
+  &__addBtn {
+    position: absolute;
+    top: -50px;
+    right: 5px;
+  }
+}

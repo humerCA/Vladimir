@@ -4,17 +4,28 @@ export const counterSlice = createSlice({
     name: 'token',
     initialState: {
         token: localStorage.getItem("token"),
+        user: JSON.parse(localStorage.getItem("user"))
     },
     reducers: {
-        removeToken: (state) => {
+
+        addUserDetails: (state, action) => {
+        
+            return {
+                token: action.payload.token,
+                user: action.payload.user
+            }
+        },
+
+        removeUserDetails: (state) => {
             state.token = null;
+            state.user = null;
         },
-        addToken: (state, action) => {
-        state.token = action.payload.token;
-        },
+
+       
+
     }
 
 })
 
-export const { removeToken, addToken } = counterSlice.actions
+export const { addUserDetails, removeUserDetails,  } = counterSlice.actions
 export default counterSlice.reducer

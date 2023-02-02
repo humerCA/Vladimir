@@ -1,0 +1,22 @@
+@use "../index.scss";
+
+.confirmation {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #ddd;
+  height: 200px;
+  border-radius: 20px;
+  gap: 10px;
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: index.$text;
+    background-color: #ddd;
+    gap: 10px;
+  }
+}

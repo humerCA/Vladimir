@@ -2,14 +2,20 @@ import HomePage from "./Layout/HomePage";
 import Masterlist from "./Pages/Masterlist";
 import NotFound from "./Layout/NotFound";
 import UserAccounts from "./Pages/Masterlist/UserAccounts";
+import Modules from "./Pages/Masterlist/Modules";
+import Confirmation from "./Components/Reusable/Confirmation";
 
 // ROUTER
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { LoginRoutes, PrivateRoutes } from "./Routes/PrivateRoutes";
 
+import { closeToast } from "./Redux/StateManagement/toastSlice";
+import { useSelector, useDispatch } from "react-redux";
+
 // MUI
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { Dialog, Snackbar, SwipeableDrawer } from "@mui/material";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +37,10 @@ const router = createBrowserRouter([
             path: "masterlist",
             element: <Masterlist />,
             children: [
+              {
+                path: "modules",
+                element: <Modules />,
+              },
               {
                 path: "user-accounts",
                 element: <UserAccounts />,
@@ -117,34 +127,6 @@ const router = createBrowserRouter([
 
 const theme = createTheme({
   palette: {
-    // primary: {
-    //   light: "#33bdc3",
-    //   main: "#00ADB5",
-    //   dark: "#00797e",
-    //   contrastText: "#222831",
-    // },
-
-    // secondary: {
-    //   light: "#60646b",
-    //   main: "#393E46",
-    //   dark: "#272b31",
-    //   contrastText: "#EEEEEE",
-    // },
-
-    // text: {
-    //   light: "#4e535a",
-    //   main: "#222831",
-    //   dark: "#171c22",
-    //   contrastText: "#EEEEEE",
-    // },
-
-    // background: {
-    //   light: "#f1f1f1",
-    //   main: "#EEEEEE",
-    //   dark: "#a6a6a6",
-    //   contrastText: "#222831",
-    // },
-
     primary: {
       light: "#fabb5b",
       main: "#f9aa33",
@@ -189,10 +171,63 @@ const theme = createTheme({
 });
 
 function App() {
+  const {
+    open: toastOpen,
+    message: toastMessage,
+    duration: toastDuration,
+  } = useSelector((state) => state.toast);
+
+  const {
+    open: confirmOpen,
+    icon: confirmIcon,
+    iconProps: confirmIconProps,
+    message: confirmMessage,
+    onConfirm: confirmFunction,
+  } = useSelector((state) => state.confirm);
+
+  const dispatch = useDispatch();
+
+  const handleClose = () => {
+    dispatch(closeToast());
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+
       <RouterProvider router={router} />
+
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={toastDuration}
+        onClose={handleClose}
+        message={toastMessage}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+      />
+
+      <Dialog
+        open={confirmOpen}
+        sx={{
+          ".MuiPaper-root": {
+            alignItems: "center",
+            padding: "20px",
+            gap: "10px",
+            width: "30%",
+            textAlign: "center",
+            borderRadius: "15px",
+          },
+        }}
+      >
+        <Confirmation
+          message={confirmMessage}
+          icon={confirmIcon}
+          iconProps={confirmIconProps}
+          onConfirm={confirmFunction}
+        />
+      </Dialog>
     </ThemeProvider>
   );
 }

@@ -2,9 +2,10 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 export const userAccountsApi = createApi({
     reducerPath: 'userAccountsApi',
+    tagTypes: ["User"],
     
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://10.10.10.4:8000/api/",
+        baseUrl: "http://127.0.0.1:8000/api/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem('token')
 
@@ -12,18 +13,30 @@ export const userAccountsApi = createApi({
             return headers
         }
     }),
+
     endpoints: (builder) => ({
         getUserAccountsApi: builder.query ({
-            query: (params) => `admin/user-accounts?search=${params.search}&page=${params.page}&limit=${params.limit}&status=${params.status}`,
-            keepUnusedDataFor: 0
+            query: (params) => `users/search?search=${params.search}&page=${params.page}&limit=${params.limit}&status=${params.status}`,
+            providesTags: ["User"]
         }),
+
         getUserAccountApi: builder.query ({
-            query: (id) => `/admin/getuserbyid?id=${id}`,
+            query: (id) => `/user/getuserbyid?id=${id}`,
             transformResponse: (response, meta, arg) => response.user,
-            keepUnusedDataFor: 0
         }),
+
+        postUserStatusApi: builder.mutation({
+            query: ({id, status}) => ({
+                url: `/user/archived-user/${id}`,
+                method: "PUT",
+                body: {
+                    status: status
+                }
+            }),
+            invalidatesTags:  ["User"]
+        })
 
     }),
 })
 
-export const { useGetUserAccountsApiQuery, useGetUserAccountApiQuery } = userAccountsApi
+export const { useGetUserAccountsApiQuery, useGetUserAccountApiQuery, usePostUserStatusApiMutation } = userAccountsApi

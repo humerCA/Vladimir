@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import "../Style/login.scss";
 import { vladimirAPI } from "../Api/vladimirAPI";
 import CustomTextField from "../Components/Reusable/CustomTextField";
-import VladimirLogo from "../Img/VladimirSmally.png";
+import VladimirLogo1 from "../Img/VladimirLogo1.svg";
+import MisLogo from "../Img/MIS LOGO.png";
+
+import { addUserDetails } from "../Redux/StateManagement/userLogin";
+import { useDispatch } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
 
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,12 +22,12 @@ const schema = yup.object().shape({
 });
 
 const LandingPage = () => {
-  // const inputStyle = { WebkitBoxShadow: "0 0 0 1000px transparent inset" };
+  const [loginErr, setLoginErr] = useState(null);
 
   const Login = useNavigate();
+  const dispatch = useDispatch();
 
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },
@@ -32,6 +36,10 @@ const LandingPage = () => {
     watch,
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
   });
 
   // console.log(watch("username"));
@@ -42,24 +50,29 @@ const LandingPage = () => {
       const res = await vladimirAPI.post("/auth/login", data);
       console.log(res.data);
       localStorage.setItem("token", res.data.data.token);
-      localStorage.setItem("username", res.data.data.user.username);
-      localStorage.setItem(
-        "department_name",
-        res.data.data.user.department.department_name
-      );
+      localStorage.setItem("user", JSON.stringify(res.data.data.user));
+
+      // dispatch(addToken(res.data.data.token));
+      dispatch(addUserDetails(res.data.data));
+
       Login("/");
+      reset();
     } catch (err) {
+      setLoginErr(err.response.data.message);
+      setTimeout(() => {
+        setLoginErr(null);
+      }, 4000);
       console.log(err.message);
-      setError(err.message);
+      setError(err.response.data.message);
     }
-    reset();
   };
 
   return (
     <Box className="login">
       <Box className="login__container">
-        <Box className="login__logo">
+        <Box className="login__logo-container">
           <Box
+            className="login__logo"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -68,10 +81,14 @@ const LandingPage = () => {
               gap: "20px",
             }}
           >
-            <img src={VladimirLogo} alt="Vladimir" width="40%" />
+            <img src={VladimirLogo1} alt="Vladimir" width="40%" />
             <Typography
               variant="h4"
-              sx={{ fontFamily: "Gill Sans MT", letterSpacing: "5px" }}
+              sx={{
+                fontFamily: "Gill Sans MT",
+                letterSpacing: "5px",
+                color: "white",
+              }}
             >
               VLADIMIR
             </Typography>
@@ -83,9 +100,26 @@ const LandingPage = () => {
           onSubmit={handleSubmit(onSubmitHandler)}
           className="login__form"
         >
+          {loginErr && <p className="login__error-message">{loginErr}</p>}
+          <Box className="login__form-logo">
+            <Box>
+              <img
+                src={VladimirLogo1}
+                alt="Vladimir Logo"
+                style={{
+                  width: "50px",
+                }}
+              />
+            </Box>
+          </Box>
+
           <Typography
             variant="h4"
-            sx={{ fontFamily: "Anton", letterSpacing: "5px" }}
+            sx={{
+              fontFamily: "Anton",
+              letterSpacing: "5px",
+              color: "secondary",
+            }}
           >
             LOGIN
           </Typography>
@@ -124,11 +158,24 @@ const LandingPage = () => {
           <Button
             variant="contained"
             color="primary"
-            sx={{ width: "200px" }}
+            sx={{
+              width: "200px",
+              borderRadius: "10px",
+              fontWeight: "bold",
+              marginTop: "10px",
+            }}
             type="submit"
           >
             Submit
           </Button>
+
+          <Box className="login__copyright">
+            <img src={MisLogo} alt="" width="50px" />
+            <p>
+              Powered By MIS All rights reserved <br />
+              Copyrights © 2021
+            </p>
+          </Box>
         </Box>
       </Box>
     </Box>

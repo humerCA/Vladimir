@@ -6,7 +6,9 @@ import { vladimirAPI } from "../Api/vladimirAPI";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
+import { removeUserDetails } from "../Redux/StateManagement/userLogin";
 import { toggleSidebar } from "../Redux/StateManagement/sidebar";
+import { NotificationsRounded, Padding } from "@mui/icons-material";
 
 import {
   MenuRounded,
@@ -37,6 +39,7 @@ import {
 
 const breadcrumbNameMap = {
   "/masterlist": "Masterlist",
+  "/masterlist/modules": "Modules",
   "/masterlist/user-accounts": "User Accounts",
   "/masterlist/service-provider": "Service Provider",
   "/masterlist/category": "Category",
@@ -86,6 +89,7 @@ function LinkRouter(props) {
 
 const Navbar = () => {
   const collapse = useSelector((state) => state.sidebar.open);
+  const userDetails = useSelector((state) => state.userLogin);
   const dispatch = useDispatch();
 
   const handleMenuCollapse = () => {
@@ -97,13 +101,7 @@ const Navbar = () => {
 
   const userLogout = useNavigate();
 
-  // const Logoutbtn = () => {
-  //   localStorage.removeItem("username");
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("department_name");
-  //   userLogout("/login");
-  // };
-
+  // User Menu
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleOpen = (event) => {
@@ -116,10 +114,9 @@ const Navbar = () => {
   const onLogoutHandler = async (data) => {
     try {
       const res = await vladimirAPI.post("/auth/logout");
-      console.log(res.data);
       localStorage.removeItem("token");
-      localStorage.removeItem("username");
-      localStorage.removeItem("department_name");
+      localStorage.removeItem("user");
+      dispatch(removeUserDetails());
       userLogout("/login");
     } catch (err) {
       console.log(err.message);
@@ -143,25 +140,34 @@ const Navbar = () => {
           </Box>
 
           <Box className="navbar__user-container">
-            <Box className="navbar__user-wrapper">
-              <Typography sx={{ fontWeight: "bold" }} color="primary">
-                {localStorage.getItem("username") &&
-                  localStorage.getItem("username").charAt(0).toUpperCase() +
-                    localStorage.getItem("username").slice(1)}
-              </Typography>
-              <span style={{ fontStyle: "italic" }}>
-                {localStorage.getItem("department_name")}
-              </span>
-            </Box>
-            <Box>
-              <Tooltip title="Settings" TransitionComponent={Zoom} arrow>
-                <IconButton onClick={handleOpen}>
-                  <Avatar sx={{ cursor: "pointer" }}>
-                    {localStorage.getItem("username").charAt(0).toUpperCase()}
-                  </Avatar>
+            <Tooltip title="Notification" TransitionComponent={Zoom} arrow>
+              <IconButton color="secondary">
+                <NotificationsRounded />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Settings" TransitionComponent={Zoom} arrow>
+              <Box className="navbar__iconBtn">
+                <IconButton color="secondary" variant="contained">
+                  <Settings />
                 </IconButton>
-              </Tooltip>
-            </Box>
+              </Box>
+            </Tooltip>
+
+            <Tooltip title="Account" TransitionComponent={Zoom} arrow>
+              <IconButton onClick={handleOpen}>
+                <Avatar
+                  sx={{
+                    cursor: "pointer",
+                    height: "30px",
+                    width: "30px",
+                    bgcolor: "primary.main",
+                  }}
+                >
+                  {userDetails?.user.username.charAt(0).toUpperCase()}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
 
@@ -200,25 +206,53 @@ const Navbar = () => {
         TransitionComponent={Fade}
         disablePortal
       >
+        <Box className="navbar__menu-settings">
+          <Avatar
+            sx={{
+              cursor: "pointer",
+              height: "20px",
+              width: "20px",
+              bgcolor: "primary.main",
+            }}
+          />
+          <Typography
+            sx={{
+              padding: "5px",
+              fontWeight: "bold",
+              pl: 2,
+            }}
+            color="text.light"
+          >
+            {userDetails?.user.username.charAt(0).toUpperCase() +
+              userDetails?.user.username.slice(1)}
+          </Typography>
+        </Box>
+
+        <Divider sx={{ mx: 2, my: 0.5 }} />
+
         <MenuItem onClick={handleClose} dense>
           <ListItemIcon>
             <Help />
           </ListItemIcon>
           <ListItemText>Help</ListItemText>
         </MenuItem>
+
         <MenuItem onClick={handleClose} dense>
           <ListItemIcon>
             <Info />
           </ListItemIcon>
           <ListItemText>About</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose} dense>
+
+        {/* <MenuItem onClick={handleClose} dense>
           <ListItemIcon>
             <Settings />
           </ListItemIcon>
           <ListItemText>Settings</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
+
         <Divider sx={{ mx: 2 }} />
+
         <MenuItem onClick={onLogoutHandler} dense>
           <ListItemIcon>
             <Logout />

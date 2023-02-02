@@ -5,7 +5,7 @@
   justify-content: space-between;
   align-items: center;
   height: 50px;
-  margin: 10px 10px;
+  margin: 5px 10px;
   z-index: 1;
   user-select: none;
 
@@ -13,22 +13,22 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 15px;
+
+    & &__iconBtn {
+      border: 1px solid index.$secondary;
+      padding: 20px;
+    }
   }
 
-  &__user-wrapper {
+  &__menu-settings {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-end;
-    margin-right: 10px;
-    font-size: smaller;
-    line-height: 0.8;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 15px;
   }
 
   &__menu {
-    min-width: 150px;
-    margin-top: 10px;
-    background: index.$text;
-    color: index.$background;
+    width: 150px;
   }
 }

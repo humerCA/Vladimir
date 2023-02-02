@@ -88,15 +88,12 @@
   }
 
   &__closeBtn {
-    @media (min-width: 801px) {
+    @media only screen and (min-width: 801px) {
       display: none !important;
     }
   }
 
-  &__textfield {
-  }
-
-  @media (max-width: 800px) {
+  @media only screen and (max-width: 800px) {
     z-index: 2;
     position: absolute;
     background-color: #f8f8f8;
@@ -110,7 +107,7 @@
   padding: 0;
   margin: 0;
 
-  @media (min-width: 801px) {
+  @media only screen and (min-width: 801px) {
     width: 75px;
   }
 }

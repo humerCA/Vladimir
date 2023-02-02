@@ -31,6 +31,7 @@ import {
   Close,
   Dashboard,
   ListAlt,
+  DatasetRounded,
   AccountBox,
   LocalOffer,
   ManageAccountsSharp,
@@ -77,6 +78,12 @@ const Sidebar = () => {
       permission: [],
       children: [
         {
+          label: "Modules",
+          icon: DatasetRounded,
+          path: "/masterlist/modules",
+          permission: [],
+        },
+        {
           label: "User Accounts",
           icon: AccountBox,
           path: "/masterlist/user-accounts",
@@ -101,7 +108,7 @@ const Sidebar = () => {
           permission: [],
         },
         {
-          label: "Create Asset Registration",
+          label: "Asset Registration",
           icon: NoteAddRounded,
           path: "masterlist/create-asset-registration",
           permission: [],
@@ -213,7 +220,7 @@ const Sidebar = () => {
 
   const { pathname } = useLocation();
   const location = useLocation();
-  console.log(location);
+  // console.log(location);
 
   useEffect(() => {
     if (!collapse) {
@@ -262,7 +269,7 @@ const Sidebar = () => {
                 // fontFamily: "Agency FB",
                 // fontFamily: "Britannic",
                 // fontFamily: "Copperplate Gothic",
-                fontFamily: "Gill Sans MT",
+                fontFamily: "Josefin Sans",
                 fontSize: "22px",
                 letterSpacing: "6px",
                 pl: 2.5,
@@ -339,12 +346,11 @@ const Sidebar = () => {
                           return (
                             <ListItemButton
                               className="sidebar__menu-btn-list"
-                              disable
                               key={childItem.path}
                               component={NavLink}
                               to={childItem.path}
                               sx={{
-                                width: "89%",
+                                width: "208px",
                                 ml: 2,
                                 borderRadius: "12px",
                                 px: 0,
