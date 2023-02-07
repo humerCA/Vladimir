@@ -85,14 +85,16 @@ const ActionMenu = (props) => {
             <ListItemIcon>
               <BorderColor />
             </ListItemIcon>
-            <ListItemText disableTypography>Edit</ListItemText>
+            <ListItemText disableTypography align="left">
+              Edit
+            </ListItemText>
           </MenuItem>
         )}
         <MenuItem onClick={handleArchiveRestore} dense>
           <ListItemIcon>
             {status === "active" ? <MoveToInbox /> : <Reply />}
           </ListItemIcon>
-          <ListItemText disableTypography>
+          <ListItemText disableTypography align="left">
             {status === "active" ? "Archive" : "Restore"}
           </ListItemText>
         </MenuItem>
@@ -102,7 +104,9 @@ const ActionMenu = (props) => {
             <ListItemIcon>
               <RestartAlt />
             </ListItemIcon>
-            <ListItemText disableTypography>Reset</ListItemText>
+            <ListItemText disableTypography align="left">
+              Reset
+            </ListItemText>
           </MenuItem>
         )}
       </Menu>

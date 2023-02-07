@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // https://vitejs.dev/config/
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -13,6 +14,7 @@ export default defineConfig({
   },
   define: {
     "process.env.PORT": `${process.env.PORT}`,
+    "process.env.SEDAR_KEY": `"${process.env.SEDAR_KEY}"`,
     // "process.env.BASEURL": `"${process.env.BASEURL}"`,
   },
 });

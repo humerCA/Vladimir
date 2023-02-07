@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import "../../Style/Masterlist/modules.scss";
 import Moment from "moment";
 import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
 import ActionMenu from "../../Components/Reusable/ActionMenu";
-import AddModules from "./AddEdit/AddModules";
+import AddServiceProvider from "./AddEdit/AddServiceProvider";
 
 // RTK
 import { useDispatch } from "react-redux";
@@ -12,8 +11,10 @@ import {
   openConfirm,
   closeConfirm,
 } from "../../Redux/StateManagement/confirmSlice";
-import { usePostModuleStatusApiMutation } from "../../Redux/Query/ModulesApi";
-import { useGetModulesApiQuery } from "../../Redux/Query/ModulesApi";
+import {
+  usePostServiceProviderStatusApiMutation,
+  useGetServiceProvidersApiQuery,
+} from "../../Redux/Query/ServiceProviderApi";
 
 import { useSelector } from "react-redux";
 
@@ -32,15 +33,15 @@ import {
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
 
-const Modules = () => {
+const ServiceProvider = () => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(1);
-  const [updateModule, setUpdateModule] = useState({
+  const [updateServiceProvider, setUpdateServiceProvider] = useState({
     status: false,
     id: null,
-    module_name: "",
+    service_provider_name: "",
   });
 
   const drawer = useSelector((state) => state.drawer);
@@ -55,11 +56,11 @@ const Modules = () => {
   };
 
   const {
-    data: modules,
-    isLoading: modulesLoading,
-    isSuccess: modulesSuccess,
-    isError: modulesError,
-  } = useGetModulesApiQuery(
+    data: serviceProviderData,
+    isLoading: serviceProviderLoading,
+    isSuccess: serviceProviderSuccess,
+    isError: serviceProviderError,
+  } = useGetServiceProvidersApiQuery(
     {
       page: page,
       limit: limit,
@@ -69,7 +70,8 @@ const Modules = () => {
     { refetchOnMountOrArgChange: true }
   );
 
-  const [postModuleStatusApi, { isLoading }] = usePostModuleStatusApiMutation();
+  const [postServiceProviderStatusApi, { isLoading }] =
+    usePostServiceProviderStatusApiMutation();
 
   const dispatch = useDispatch();
 
@@ -95,7 +97,7 @@ const Modules = () => {
 
         onConfirm: async () => {
           try {
-            const result = await postModuleStatusApi({
+            const result = await postServiceProviderStatusApi({
               id: id,
               status: status === "active" ? false : true,
             }).unwrap();
@@ -116,19 +118,19 @@ const Modules = () => {
   };
 
   const onUpdateHandler = (props) => {
-    const { id, module_name } = props;
-    setUpdateModule({
+    const { id, service_provider_name } = props;
+    setUpdateServiceProvider({
       status: true,
       id: id,
-      module_name: module_name,
+      service_provider_name: service_provider_name,
     });
   };
 
   const onUpdateResetHandler = () => {
-    setUpdateModule({
+    setUpdateServiceProvider({
       status: false,
       id: null,
-      module_name: "",
+      service_provider_name: "",
     });
   };
 
@@ -142,7 +144,7 @@ const Modules = () => {
         className="mcontainer__title"
         sx={{ fontFamily: "Anton", fontSize: "2rem" }}
       >
-        Modules
+        Service Providers
       </Typography>
 
       <Box className="mcontainer__wrapper">
@@ -154,7 +156,7 @@ const Modules = () => {
         />
 
         <Box>
-          <TableContainer className="mcontainer__th-body">
+          <TableContainer>
             <Table className="mcontainer__table" stickyHeader>
               <TableHead>
                 <TableRow>
@@ -162,7 +164,9 @@ const Modules = () => {
                     Id
                   </TableCell>
 
-                  <TableCell className="mcontainer__th-cell">Module</TableCell>
+                  <TableCell className="mcontainer__th-cell">
+                    Service Provider
+                  </TableCell>
 
                   <TableCell className="mcontainer__th-cell mcontainer__text-center">
                     Status
@@ -182,19 +186,19 @@ const Modules = () => {
               </TableHead>
 
               <TableBody>
-                {modulesSuccess &&
-                  modules.data.map((modules) => (
-                    <TableRow key={modules.id}>
+                {serviceProviderSuccess &&
+                  serviceProviderData.data.map((data) => (
+                    <TableRow key={data.id}>
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {modules.id}
+                        {data.id}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
-                        {modules.module_name}
+                        {data.service_provider_name}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {modules.is_active ? (
+                        {data.is_active ? (
                           <Typography
                             color="success.main"
                             sx={{
@@ -227,13 +231,13 @@ const Modules = () => {
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {Moment(modules.created_at).format("MMM DD, YYYY")}
+                        {Moment(data.created_at).format("MMM DD, YYYY")}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
                         <ActionMenu
                           status={status}
-                          data={modules}
+                          data={data}
                           onUpdateHandler={onUpdateHandler}
                           onArchiveRestoreHandler={onArchiveRestoreHandler}
                         />
@@ -251,12 +255,18 @@ const Modules = () => {
               5,
               10,
               15,
-              { label: "All", value: parseInt(modules?.total) },
+              { label: "All", value: parseInt(serviceProviderData?.total) },
             ]}
             component="div"
-            count={modulesSuccess ? modules.total : 0}
-            page={modulesSuccess ? modules.current_page - 1 : 0}
-            rowsPerPage={modulesSuccess ? parseInt(modules?.per_page) : 5}
+            count={serviceProviderSuccess ? serviceProviderData.total : 0}
+            page={
+              serviceProviderSuccess ? serviceProviderData.current_page - 1 : 0
+            }
+            rowsPerPage={
+              serviceProviderSuccess
+                ? parseInt(serviceProviderData?.per_page)
+                : 5
+            }
             onPageChange={pageHandler}
             onRowsPerPageChange={limitHandler}
           />
@@ -264,8 +274,8 @@ const Modules = () => {
       </Box>
 
       <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
-        <AddModules
-          data={updateModule}
+        <AddServiceProvider
+          data={updateServiceProvider}
           onUpdateResetHandler={onUpdateResetHandler}
         />
       </Dialog>
@@ -273,4 +283,4 @@ const Modules = () => {
   );
 };
 
-export default Modules;
+export default ServiceProvider;

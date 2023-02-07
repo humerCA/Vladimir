@@ -2,7 +2,7 @@ import React from "react";
 import "../../Style/Masterlist/masterlistToolbar.scss";
 import { Box } from "@mui/system";
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
-import { LibraryAdd } from "@mui/icons-material";
+import { LibraryAdd, SystemUpdateAltRounded } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
 import { useDispatch } from "react-redux";
@@ -13,8 +13,8 @@ const MasterlistToolbar = (props) => {
     path = "",
     onStatusChange = () => {},
     onSearchChange = () => {},
-    onDrawerShow = () => {},
     onSetPage = () => {},
+    onImport,
   } = props;
 
   const searchHandler = (e) => {
@@ -25,8 +25,7 @@ const MasterlistToolbar = (props) => {
   };
 
   const statusHandler = (e) => {
-    console.log(e);
-
+    // console.log(e);
     if (e.target.checked) {
       return onStatusChange("deactivated");
     }
@@ -44,7 +43,7 @@ const MasterlistToolbar = (props) => {
       <Box className="masterlist-toolbar__container">
         <Box className="toolbar__button-wrapper">
           <FormControlLabel
-            control={<Checkbox onChange={statusHandler} />}
+            control={<Checkbox size="small" onChange={statusHandler} />}
             label="ARCHIVED"
           />
         </Box>
@@ -68,12 +67,27 @@ const MasterlistToolbar = (props) => {
           onKeyPress={searchHandler}
         />
         <Box className="masterlist-toolbar__addBtn">
+          {Boolean(onImport) && (
+            <Button
+              component={Link}
+              to={path}
+              onClick={onImport}
+              variant="contained"
+              startIcon={<SystemUpdateAltRounded />}
+              size="small"
+              color="secondary"
+            >
+              Import
+            </Button>
+          )}
+
           <Button
             component={Link}
             to={path}
             onClick={handleOpenDrawer}
             variant="contained"
             startIcon={<LibraryAdd />}
+            size="small"
           >
             Add
           </Button>

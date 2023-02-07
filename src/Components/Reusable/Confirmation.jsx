@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 
 // MUI
 import {
+  Box,
   Button,
   DialogActions,
   DialogContent,
@@ -34,23 +35,24 @@ const Confirmation = (props) => {
   };
 
   return (
-    <>
+    <Box className="confirmation">
       <SvgIcon
         component={icon}
         sx={{ fontSize: "50px", color: "#ffa000", ...iconProps }}
       />
       <DialogTitle
+        className="confirmation__title"
         color="secondary"
-        sx={{ fontFamily: "Anton", fontSize: "25px", padding: 0 }}
+        sx={{ fontFamily: "Anton", fontSize: "1.5rem", padding: 0 }}
       >
         Confirmation
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent sx={{ padding: 0, paddingBottom: 1 }}>
         <DialogContentText component="div">{message}</DialogContentText>
       </DialogContent>
 
-      <DialogActions sx={{ gap: "40px" }}>
+      <DialogActions className="confirmation__btn">
         <Button
           autoFocus
           variant="outlined"
@@ -69,7 +71,7 @@ const Confirmation = (props) => {
           <span>Yes</span>
         </LoadingButton>
       </DialogActions>
-    </>
+    </Box>
   );
 };
 

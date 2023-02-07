@@ -244,13 +244,6 @@ const Navbar = () => {
           <ListItemText>About</ListItemText>
         </MenuItem>
 
-        {/* <MenuItem onClick={handleClose} dense>
-          <ListItemIcon>
-            <Settings />
-          </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
-        </MenuItem> */}
-
         <Divider sx={{ mx: 2 }} />
 
         <MenuItem onClick={onLogoutHandler} dense>

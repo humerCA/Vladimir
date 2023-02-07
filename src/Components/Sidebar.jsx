@@ -43,6 +43,7 @@ import {
   ClassRounded,
   PlaylistRemoveRounded,
   SummarizeRounded,
+  ArrowBackIosRounded,
 } from "@mui/icons-material";
 
 const Sidebar = () => {
@@ -247,10 +248,11 @@ const Sidebar = () => {
           {collapse ? (
             <IconButton
               className="sidebar__closeBtn"
-              sx={{ position: "absolute", right: 3, top: 3 }}
+              sx={{ position: "absolute", right: 10, top: 10, zIndex: 2 }}
               onClick={handleMenuCollapse}
+              size="small"
             >
-              <Close />
+              <ArrowBackIosRounded />
             </IconButton>
           ) : null}
           <Box className="sidebar__logo-container">

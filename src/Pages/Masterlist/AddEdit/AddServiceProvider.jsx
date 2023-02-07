@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import "../../../Style/Masterlist/addModules.scss";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
 
 import { useForm } from "react-hook-form";
@@ -11,33 +10,33 @@ import { Box, Button, Typography } from "@mui/material";
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
 import { useDispatch } from "react-redux";
 import {
-  usePostModuleApiMutation,
-  useUpdateModuleApiMutation,
-} from "../../../Redux/Query/ModulesApi";
+  usePostServiceProviderApiMutation,
+  useUpdateServiceProviderApiMutation,
+} from "../../../Redux/Query/ServiceProviderApi";
 
 const schema = yup.object().shape({
   id: yup.string(),
-  module_name: yup.string().required(),
+  service_provider_name: yup.string().required(),
 });
 
-const AddModules = (props) => {
+const AddServiceProvider = (props) => {
   const { data, onUpdateResetHandler } = props;
   const dispatch = useDispatch();
 
   const [
-    postModule,
+    postServiceProvider,
     { isLoading, isSuccess: isPostSuccess, data: postData, isError },
-  ] = usePostModuleApiMutation();
+  ] = usePostServiceProviderApiMutation();
 
   const [
-    updateModule,
+    updateServiceProvider,
     {
       isLoading: isUpdateLoading,
       isSuccess: isUpdateSuccess,
       data: updateData,
       isError: isUpdateError,
     },
-  ] = useUpdateModuleApiMutation();
+  ] = useUpdateServiceProviderApiMutation();
 
   const {
     handleSubmit,
@@ -50,7 +49,7 @@ const AddModules = (props) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      module_name: "",
+      service_provider_name: "",
     },
   });
 
@@ -67,7 +66,7 @@ const AddModules = (props) => {
   useEffect(() => {
     if (data.status) {
       setValue("id", data.id);
-      setValue("module_name", data.module_name);
+      setValue("service_provider_name", data.service_provider_name);
     }
   }, [data]);
 
@@ -76,10 +75,11 @@ const AddModules = (props) => {
       setTimeout(() => {
         onUpdateResetHandler();
       }, 500);
-      updateModule(formData);
+      updateServiceProvider(formData);
       return;
     }
-    postModule(formData);
+    postServiceProvider(formData);
+    console.log(data.status);
   };
 
   const handleCloseDrawer = () => {
@@ -96,7 +96,7 @@ const AddModules = (props) => {
         color="secondary.main"
         sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
       >
-        {data.status ? "Edit Module" : "Add Module"}
+        {data.status ? "Edit Service Provider" : "Add Service Provider"}
       </Typography>
 
       <Box
@@ -107,13 +107,13 @@ const AddModules = (props) => {
         <CustomTextField
           required
           control={control}
-          name="module_name"
-          label="Module Name"
+          name="service_provider_name"
+          label="Service Provider"
           type="text"
           color="secondary"
           size="small"
-          error={errors.module_name?.message}
-          helperText={errors.module_name?.message}
+          error={errors.service_provider_name?.message}
+          helperText={errors.service_provider_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
@@ -121,11 +121,11 @@ const AddModules = (props) => {
             type="submit"
             variant="contained"
             size="small"
-            disabled={
-              (errors.module_name ? true : false) ||
-              watch("module_name") === undefined ||
-              watch("module_name") === ""
-            }
+            // disabled={
+            //   (errors.service_provider_name ? true : false) ||
+            //   watch("service_provider_name") === undefined ||
+            //   watch("service_provider_name") === ""
+            // }
           >
             Create
           </Button>
@@ -144,4 +144,4 @@ const AddModules = (props) => {
   );
 };
 
-export default AddModules;
+export default AddServiceProvider;

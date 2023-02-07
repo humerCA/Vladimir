@@ -1,9 +1,10 @@
 import HomePage from "./Layout/HomePage";
 import Masterlist from "./Pages/Masterlist";
 import NotFound from "./Layout/NotFound";
-import UserAccounts from "./Pages/Masterlist/UserAccounts";
-import Modules from "./Pages/Masterlist/Modules";
 import Confirmation from "./Components/Reusable/Confirmation";
+import Modules from "./Pages/Masterlist/Modules";
+import UserAccounts from "./Pages/Masterlist/UserAccounts";
+import ServiceProvider from "./Pages/Masterlist/ServiceProvider";
 
 // ROUTER
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -16,6 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Dialog, Snackbar, SwipeableDrawer } from "@mui/material";
+import Category from "./Pages/Masterlist/Category";
 
 const router = createBrowserRouter([
   {
@@ -48,12 +50,12 @@ const router = createBrowserRouter([
 
               {
                 path: "service-provider",
-                // element: <ServiceProvider />,
+                element: <ServiceProvider />,
               },
 
               {
                 path: "category",
-                // element: <Category />,
+                element: <Category />,
               },
 
               {
@@ -214,10 +216,13 @@ function App() {
           ".MuiPaper-root": {
             alignItems: "center",
             padding: "20px",
-            gap: "10px",
-            width: "30%",
+            margin: 0,
+            gap: "5px",
+            minWidth: "250px",
+            maxWidth: "350px",
+            width: "50%",
             textAlign: "center",
-            borderRadius: "15px",
+            borderRadius: "10px",
           },
         }}
       >

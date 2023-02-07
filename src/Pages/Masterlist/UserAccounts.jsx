@@ -3,6 +3,7 @@ import Moment from "moment";
 import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
 import ActionMenu from "../../Components/Reusable/ActionMenu";
 import AddUserAccounts from "../../Pages/Masterlist/AddEdit/AddUserAccount";
+import * as XLSX from "xlsx";
 
 // RTK
 import { useDispatch } from "react-redux";
@@ -11,14 +12,18 @@ import {
   openConfirm,
   closeConfirm,
 } from "../../Redux/StateManagement/confirmSlice";
-import { usePostUserStatusApiMutation } from "../../Redux/Query/UserAccountsApi";
-import { useGetUserAccountsApiQuery } from "../../Redux/Query/UserAccountsApi";
+import {
+  usePostUserStatusApiMutation,
+  useResetUserApiMutation,
+  useGetUserAccountsApiQuery,
+} from "../../Redux/Query/UserAccountsApi";
 import { useSelector } from "react-redux";
 
 // MUI
 import {
   Box,
-  SwipeableDrawer,
+  Button,
+  Drawer,
   Table,
   TableBody,
   TableCell,
@@ -28,7 +33,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Help, ReportProblem } from "@mui/icons-material";
+import { Help, IosShareRounded, ReportProblem } from "@mui/icons-material";
 
 const UserAccounts = () => {
   const [search, setSearch] = useState("");
@@ -38,7 +43,23 @@ const UserAccounts = () => {
   const [updateUser, setUpdateUser] = useState({
     status: false,
     id: null,
+    employee_id: "",
+    firstname: "",
+    lastname: "",
+    department_id: "",
     username: "",
+    password: "",
+    role_id: 1,
+    access_permission: [
+      "Dashboard",
+      "Masterlist",
+      "Asset for Tagging",
+      "Asset List",
+      "Request",
+      "Onhand",
+      "Disposal",
+      "Reports",
+    ],
   });
 
   const drawer = useSelector((state) => state.drawer);
@@ -113,22 +134,90 @@ const UserAccounts = () => {
     );
   };
 
+  const onUpdateHandler = (props) => {
+    const { id, module_name } = props;
+    setUpdateUser({
+      status: true,
+      id: id,
+      module_name: module_name,
+    });
+  };
+
+  const onUpdateResetHandler = () => {
+    setUpdateUser({
+      status: false,
+      id: null,
+      module_name: "",
+    });
+  };
+
+  const onResetHandler = async (id) => {
+    dispatch(
+      openConfirm({
+        icon: status === "active" ? ReportProblem : Help,
+        message: (
+          <Box>
+            <Typography> Are you sure you want to</Typography>
+            <Typography
+              sx={{ display: "inline-block", color: "secondary.main" }}
+            >
+              RESET
+            </Typography>{" "}
+            this user password?
+          </Box>
+        ),
+
+        onConfirm: async (id) => {
+          try {
+            const result = await useResetUserApiMutation({
+              id: id,
+            }).unwrap();
+
+            dispatch(
+              openToast({
+                message: result.data.message,
+                duration: 5000,
+              })
+            );
+            dispatch(closeConfirm());
+          } catch (err) {
+            console.log(err.message);
+          }
+        },
+      })
+    );
+  };
+
+  const handleExport = () => {
+    const workbook = XLSX.utils.book_new(),
+      worksheet = XLSX.utils.json_to_sheet(users.data);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.writeFile(workbook, "Vladimir-UserAccounts.xlsx");
+  };
+
   const onSetPage = () => {
     setPage(1);
   };
 
   return (
     <Box className="mcontainer">
-      <Typography sx={{ fontFamily: "Anton", fontSize: "2rem" }}>
+      <Typography
+        sx={{ fontFamily: "Anton", fontSize: "2rem" }}
+        className="mcontainer__title"
+      >
         User Accounts
       </Typography>
+
       <Box className="mcontainer__wrapper">
         <MasterlistToolbar
           path="#"
           onStatusChange={setStatus}
           onSearchChange={setSearch}
           onSetPage={setPage}
+          onImport={() => {}}
         />
+
         <Box>
           <TableContainer>
             <Table className="mcontainer__table" stickyHeader>
@@ -244,6 +333,7 @@ const UserAccounts = () => {
                           status={status}
                           data={users}
                           onArchiveRestoreHandler={onArchiveRestoreHandler}
+                          onResetHandler={onResetHandler}
                         />
                       </TableCell>
                     </TableRow>
@@ -252,25 +342,54 @@ const UserAccounts = () => {
             </Table>
           </TableContainer>
         </Box>
-        <Box className="mcontainer__pagination">
+
+        <Box className="mcontainer__pagination-export">
+          <Button
+            variant="outlined"
+            size="small"
+            color="text"
+            startIcon={<IosShareRounded color="primary" />}
+            onClick={handleExport}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "10px 20px",
+            }}
+          >
+            EXPORT
+          </Button>
+
           <TablePagination
-            rowsPerPageOptions={[5, 10, 15]}
+            rowsPerPageOptions={[
+              5,
+              10,
+              15,
+              { label: "All", value: parseInt(usersSuccess?.total) },
+            ]}
             component="div"
             count={usersSuccess ? users.total : 0}
             page={usersSuccess ? users.current_page - 1 : 0}
             rowsPerPage={usersSuccess ? parseInt(users?.per_page) : 5}
             onPageChange={pageHandler}
             onRowsPerPageChange={limitHandler}
+            sx={{ flexWrap: "wrap" }}
           />
         </Box>
 
-        <SwipeableDrawer
+        <Drawer
           anchor="right"
           open={drawer}
-          PaperProps={{ sx: { borderRadius: "10px" } }}
+          onClose={() => {}}
+          PaperProps={{
+            sx: {
+              borderRadius: "10px",
+              background: "#eee",
+            },
+          }}
         >
           <AddUserAccounts data={updateUser} />
-        </SwipeableDrawer>
+        </Drawer>
       </Box>
     </Box>
   );

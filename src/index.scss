@@ -11,15 +11,10 @@ $text: #2c3639;
 $scrollBar: #a6a6a6;
 
 :root {
-  /* font-family: Inter, Avenir, Helvetica, Arial, sans-serif; */
   font-family: "Raleway", "Anton", "Josefin Sans" sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
-
-  // color-scheme: light dark;
-  // color: rgba(255, 255, 255, 0.87);
-  // background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -62,10 +57,6 @@ input:-webkit-autofill:active {
 body {
   margin: 0;
   padding: 0;
-  background: rgb(249, 170, 51);
-
-  // min-width: 320px;
-  // min-height: 100vh;
 }
 
 img {
@@ -76,21 +67,38 @@ img {
 .mcontainer {
   display: flex;
   flex-direction: column;
+  position: relative;
   padding: 10px 10px;
   color: $secondary;
   margin: 0 auto;
   width: 90%;
+  height: 250px;
+  flex: 1;
 
   & &__wrapper {
-    margin-top: 10px;
     padding: 5px 0;
     background: #fdfdfd;
     border: #34495515 solid 1px;
     border-radius: 10px;
+
+    @media (max-width: 350px) {
+      margin-top: 50px;
+    }
+  }
+
+  & &__title {
+    @media (max-width: 350px) {
+      display: none;
+    }
   }
 
   & &__table {
     border-radius: 10px;
+  }
+
+  & &__th-body {
+    max-height: 400px;
+    // padding-bottom: 30px;
   }
 
   & &__th-cell {
@@ -98,6 +106,7 @@ img {
     padding: 10px 20px;
     color: $secondary;
     border-bottom: 3px solid $background;
+    overflow-y: auto;
   }
 
   & &__tr-cell {
@@ -105,6 +114,10 @@ img {
     padding: 10px 20px;
     border-bottom: 3px solid $background;
     overflow-y: auto;
+
+    @media (max-height: 600px) {
+      padding: 8px 20px;
+    }
   }
 
   & &__text-center {
@@ -116,5 +129,16 @@ img {
   & &__text-weight {
     color: $text;
     font-weight: 600;
+  }
+
+  & &__pagination {
+    box-shadow: 0px -3px 19px -10px rgba(166, 166, 166, 0.4);
+  }
+
+  & &__pagination-export {
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0px -3px 19px -10px rgba(166, 166, 166, 0.4);
+    flex-wrap: wrap;
   }
 }

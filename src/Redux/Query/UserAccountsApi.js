@@ -34,9 +34,45 @@ export const userAccountsApi = createApi({
                 }
             }),
             invalidatesTags:  ["User"]
-        })
+        }),
+
+        postUserApi: builder.mutation({
+            query: (data) => ({
+                url: `/user/`,
+                method: "POST",
+                body: data
+            }),
+            invalidatesTags:  ["User"]
+        }),
+
+        updateUserApi: builder.mutation({
+            query: ({id, ...data}) => ({
+                url: `/user/${id}`,
+                method: "PUT",
+                body: data
+            }),
+            invalidatesTags:  ["User"]
+        }),
+
+        resetUserApi: builder.mutation({
+            query: ({id, ...data}) => ({
+                url: `/auth/reset/${id}`,
+                method: "PUT",
+                body: data
+            }),
+            invalidatesTags:  ["User"]
+        }),
+
+        getSedarUserApi: builder.query({
+            query: ({id, ...data}) => ({
+                url: `http://rdfsedar.com/api/data/employees/`,
+                method: "PUT",
+                body: data
+            }),
+            invalidatesTags:  ["User"]
+        }),
 
     }),
 })
 
-export const { useGetUserAccountsApiQuery, useGetUserAccountApiQuery, usePostUserStatusApiMutation } = userAccountsApi
+export const { useGetUserAccountsApiQuery, useGetUserAccountApiQuery, usePostUserStatusApiMutation, usePostUserApiMutation, useUpdateUserApiMutation, useResetUserApiMutation} = userAccountsApi

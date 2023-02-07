@@ -1,34 +1,58 @@
-import React, { useEffect } from "react";
-import "../../../Style/Masterlist/addModules.scss";
-import { vladimirAPI } from "../../../Api/vladimirAPI";
+import React, { useEffect, useState } from "react";
+import "../../../Style/Masterlist/addUserAccount.scss";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
+import CustomAutoComplete from "../../../Components/Reusable/CustomAutoComplete";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { ArrowBackIosNewRounded } from "@mui/icons-material";
+import { createFilterOptions } from "@mui/material/Autocomplete";
 
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
 import { useDispatch } from "react-redux";
 import {
-  usePostModuleApiMutation,
-  useUpdateModuleApiMutation,
-} from "../../../Redux/Query/ModulesApi";
+  usePostUserApiMutation,
+  useUpdateUserApiMutation,
+} from "../../../Redux/Query/UserAccountsApi";
+import { useGetSedarUsersApiQuery } from "../../../Redux/Query/SedarUserApi";
 
 const schema = yup.object().shape({
-  id: yup.string(),
-  module_name: yup.string().required(),
+  employee_id: yup.string().required(),
+  sedar_employee: yup
+    .object()
+    .typeError("Employee ID is a required field")
+    .required(),
+  first_name: yup.string().required(),
+  last_name: yup.string().required(),
+  department: yup.string().required(),
+  position: yup.string().required(),
+  username: yup.string().required().label("Username"),
+  role_id: yup.string().required().label("Username"),
+  user_permission: yup.string().required().label("User permission"),
 });
 
-const AddModules = (props) => {
-  const { data } = props;
+const AddUserAccount = (props) => {
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const { data, onUpdateResetHandler } = props;
   const dispatch = useDispatch();
 
   const [
     postModule,
     { isLoading, isSuccess: isPostSuccess, data: postData, isError },
-  ] = usePostModuleApiMutation();
+  ] = usePostUserApiMutation();
 
   const [
     updateModule,
@@ -38,7 +62,14 @@ const AddModules = (props) => {
       data: updateData,
       isError: isUpdateError,
     },
-  ] = useUpdateModuleApiMutation();
+  ] = useUpdateUserApiMutation();
+
+  const {
+    data: sedarData = [],
+    isLoading: isSedarLoading,
+    isError: isSedarError,
+  } = useGetSedarUsersApiQuery();
+  console.log(sedarData);
 
   const {
     handleSubmit,
@@ -51,7 +82,25 @@ const AddModules = (props) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      module_name: "",
+      sedar_employee: null,
+      employee_id: "",
+      first_name: "",
+      last_name: "",
+      department: "",
+      position: "",
+      username: "",
+      role_id: 1,
+      user_permission: "",
+      // [
+      // "Dashboard",
+      // "Masterlist",
+      // "Asset for Tagging",
+      // "Asset List",
+      // "Request",
+      // "Onhand",
+      // "Disposal",
+      // "Reports",
+      // ],
     },
   });
 
@@ -59,76 +108,238 @@ const AddModules = (props) => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+    } else if (isUpdateSuccess) {
+      reset();
+      handleCloseDrawer();
     }
-  }, [isPostSuccess]);
+  }, [isPostSuccess, isUpdateSuccess]);
 
   useEffect(() => {
     if (data.status) {
-      setValue("id", data.id);
-      setValue("module_name", data.module_name);
+      setValue("employee_id", data.employee_id);
+      setValue("first_name", data.first_name);
+      setValue("last_name", data.last_name);
+      setValue("department", data.department);
+      setValue("position", data.position);
+      setValue("username", data.username);
+      setValue("role_id", data.role_id);
+      setValue("user_permission", data.user_permission);
     }
   }, [data]);
 
   const onSubmitHandler = (formData) => {
     if (data.status) {
-      return updateModule(formData);
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
+      updateModule(formData);
+      return;
     }
-    postModule(formData);
+    const obj = {
+      ...formData,
+      password: formData.username,
+    };
+    postModule(obj);
   };
 
   const handleCloseDrawer = () => {
+    setTimeout(() => {
+      onUpdateResetHandler();
+    }, 500);
+
     dispatch(closeDrawer());
   };
 
+  const filterOptions = createFilterOptions({
+    limit: 100,
+    matchFrom: "any",
+  });
+
   return (
-    <Box className="add-masterlist">
-      <Typography
-        color="secondary.main"
-        sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
-      >
-        {data.status ? "Edit Module" : "Add Module"}
-      </Typography>
+    <Box className="add-userAccount">
+      <Box className="add-userAccount__title">
+        <IconButton
+          className="add-userAccount__back"
+          onClick={handleCloseDrawer}
+        >
+          <ArrowBackIosNewRounded color="secondary" />
+        </IconButton>
+
+        <Typography
+          color="secondary.main"
+          sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
+        >
+          {data.status ? "EDIT USER" : "ADD USER"}
+        </Typography>
+      </Box>
 
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmitHandler)}
-        className="add-masterlist__content"
+        className="add-userAccount__wrapper"
       >
-        <CustomTextField
-          required
-          control={control}
-          name="module_name"
-          label="Module Name"
-          type="text"
-          color="secondary"
-          error={errors.module_name?.message}
-          helperText={errors.module_name?.message}
-          fullWidth
-        />
-        <Box className="add-masterlist__buttons">
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={
-              (errors.module_name ? true : false) ||
-              watch("module_name") === undefined ||
-              watch("module_name") === ""
-            }
+        <Box className="add-userAccount__employee">
+          <Typography
+            color="secondary.main"
+            sx={{ fontFamily: "Anton", fontSize: "1rem" }}
           >
-            Create
-          </Button>
+            EMPLOYEE DETAILS
+          </Typography>
 
-          <Button
-            variant="outlined"
+          <CustomAutoComplete
+            required
+            name="sedar_employee"
+            control={control}
+            options={sedarData}
+            loading={isSedarLoading}
+            getOptionLabel={(option) => option.general_info?.full_id_number}
+            isOptionEqualToValue={(option, value) =>
+              option.general_info?.full_id_number ===
+              value.general_info?.full_id_number
+            }
+            size="small"
+            onChange={(_, value) => {
+              setValue("employee_id", value.general_info.full_id_number);
+              setValue("first_name", value.general_info.first_name);
+              setValue("last_name", value.general_info.last_name);
+              setValue("department", value.unit_info.department_name);
+              setValue("position", value.position_info.position_name);
+              return value;
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={
+                  <>
+                    Employee ID <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                sx={{
+                  ".MuiInputBase-root": {
+                    borderRadius: "12px",
+                  },
+                }}
+                color="secondary"
+                error={errors.sedar_employee?.message}
+                helperText={errors.sedar_employee?.message}
+              />
+            )}
+            disablePortal
+            filterOptions={filterOptions}
+          />
+
+          <CustomTextField
+            control={control}
+            name="first_name"
+            label="Firstname"
+            type="text"
             color="secondary"
-            onClick={handleCloseDrawer}
+            size="small"
+            fullWidth
+            disabled
+          />
+
+          <CustomTextField
+            control={control}
+            name="last_name"
+            label="Last Name"
+            type="text"
+            color="secondary"
+            size="small"
+            fullWidth
+            disabled
+          />
+
+          <CustomTextField
+            control={control}
+            name="department"
+            label="Department"
+            type="text"
+            color="secondary"
+            size="small"
+            fullWidth
+            disabled
+          />
+
+          <CustomTextField
+            control={control}
+            name="position"
+            label="Position"
+            type="text"
+            color="secondary"
+            size="small"
+            fullWidth
+            disabled
+          />
+
+          <Divider sx={{ py: 0.5 }} />
+
+          <Typography
+            color="secondary.main"
+            sx={{ fontFamily: "Anton", fontSize: "1rem" }}
           >
-            Cancel
-          </Button>
+            USERNAME AND PERMISSION
+          </Typography>
+
+          <CustomTextField
+            control={control}
+            name="username"
+            label={
+              <>
+                Username <span style={{ color: "red" }}>*</span>
+              </>
+            }
+            type="text"
+            color="secondary"
+            size="small"
+            error={errors.username?.message}
+            helperText={errors.username?.message}
+            fullWidth
+          />
+
+          <CustomAutoComplete
+            required
+            name="user_permission"
+            control={control}
+            options={["Fixed Asset", "Warehouse", "H&M"]}
+            size="small"
+            renderInput={(params) => (
+              <TextField
+                color="secondary"
+                {...params}
+                label={
+                  <>
+                    User Peremission <span style={{ color: "red" }}>*</span>
+                  </>
+                }
+                sx={{
+                  ".MuiInputBase-root": { borderRadius: "12px" },
+                }}
+                error={errors.user_permission?.message}
+                helperText={errors.user_permission?.message}
+              />
+            )}
+            disablePortal
+          />
+
+          <Box className="add-userAccount__buttons">
+            <Button size="small" type="submit" variant="contained">
+              ADD USER
+            </Button>
+
+            <Button
+              size="small"
+              variant="outlined"
+              color="secondary"
+              onClick={handleCloseDrawer}
+            >
+              Cancel
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
   );
 };
 
-export default AddModules;
+export default AddUserAccount;

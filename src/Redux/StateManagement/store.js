@@ -12,6 +12,8 @@ import userLoginReducer from "../StateManagement/userLogin"
 // Query
 import { modulesApi } from '../Query/ModulesApi'
 import { userAccountsApi } from '../Query/UserAccountsApi'
+import { serviceProviderApi } from '../Query/ServiceProviderApi'
+import { sedarUsersApi } from '../Query/SedarUserApi'
 
 
 export const store =  configureStore({
@@ -23,10 +25,12 @@ export const store =  configureStore({
         drawer: drawerReducer,
         [modulesApi.reducerPath]: modulesApi.reducer,
         [userAccountsApi.reducerPath]: userAccountsApi.reducer,
+        [sedarUsersApi.reducerPath]: sedarUsersApi.reducer,
+        [serviceProviderApi.reducerPath]: serviceProviderApi.reducer,
     },
 
     middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({serializableCheck: false,}).concat([modulesApi.middleware, userAccountsApi.middleware]),
+    getDefaultMiddleware({serializableCheck: false,}).concat([modulesApi.middleware, userAccountsApi.middleware, sedarUsersApi.middleware, serviceProviderApi.middleware]),
 })
 
 setupListeners(store.dispatch)

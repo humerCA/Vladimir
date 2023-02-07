@@ -153,21 +153,21 @@ const LandingPage = () => {
               error={errors.password?.message}
               helperText={errors.password?.message}
             />
-          </Box>
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              width: "200px",
-              borderRadius: "10px",
-              fontWeight: "bold",
-              marginTop: "10px",
-            }}
-            type="submit"
-          >
-            Submit
-          </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                borderRadius: "10px",
+                fontWeight: "bold",
+                marginTop: "10px",
+              }}
+              type="submit"
+              fullWidth
+            >
+              Submit
+            </Button>
+          </Box>
 
           <Box className="login__copyright">
             <img src={MisLogo} alt="" width="50px" />
