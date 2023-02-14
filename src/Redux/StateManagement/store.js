@@ -14,7 +14,10 @@ import { modulesApi } from '../Query/ModulesApi'
 import { userAccountsApi } from '../Query/UserAccountsApi'
 import { serviceProviderApi } from '../Query/ServiceProviderApi'
 import { sedarUsersApi } from '../Query/SedarUserApi'
-
+import { majorCategoryApi } from '../Query/Category/MajorCategory'
+import { minorCategoryApi } from '../Query/Category/MinorCategory'
+import { categoryListApi } from '../Query/Category/CategoryList'
+import { supplierApi } from '../Query/SupplierApi'
 
 export const store =  configureStore({
     reducer: {
@@ -27,10 +30,14 @@ export const store =  configureStore({
         [userAccountsApi.reducerPath]: userAccountsApi.reducer,
         [sedarUsersApi.reducerPath]: sedarUsersApi.reducer,
         [serviceProviderApi.reducerPath]: serviceProviderApi.reducer,
+        [majorCategoryApi.reducerPath]: majorCategoryApi.reducer,
+        [minorCategoryApi.reducerPath]: minorCategoryApi.reducer,
+        [categoryListApi.reducerPath]: categoryListApi.reducer,
+        [supplierApi.reducerPath]: supplierApi.reducer,
     },
 
     middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({serializableCheck: false,}).concat([modulesApi.middleware, userAccountsApi.middleware, sedarUsersApi.middleware, serviceProviderApi.middleware]),
+    getDefaultMiddleware({serializableCheck: false,}).concat([modulesApi.middleware, userAccountsApi.middleware, sedarUsersApi.middleware, serviceProviderApi.middleware, majorCategoryApi.middleware, minorCategoryApi.middleware, categoryListApi.middleware, supplierApi.middleware]),
 })
 
 setupListeners(store.dispatch)

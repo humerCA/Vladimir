@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "../../../Style/Masterlist/addModules.scss";
+import "../../../Style/Masterlist/addMasterlist.scss";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
 
 import { useForm } from "react-hook-form";

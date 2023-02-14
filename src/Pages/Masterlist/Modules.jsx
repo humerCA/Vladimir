@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import "../../Style/Masterlist/modules.scss";
 import Moment from "moment";
 import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
 import ActionMenu from "../../Components/Reusable/ActionMenu";
 import AddModules from "./AddEdit/AddModules";
 
 // RTK
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openToast } from "../../Redux/StateManagement/toastSlice";
 import {
   openConfirm,
@@ -14,8 +13,6 @@ import {
 } from "../../Redux/StateManagement/confirmSlice";
 import { usePostModuleStatusApiMutation } from "../../Redux/Query/ModulesApi";
 import { useGetModulesApiQuery } from "../../Redux/Query/ModulesApi";
-
-import { useSelector } from "react-redux";
 
 // MUI
 import {
@@ -184,7 +181,14 @@ const Modules = () => {
               <TableBody>
                 {modulesSuccess &&
                   modules.data.map((modules) => (
-                    <TableRow key={modules.id}>
+                    <TableRow
+                      key={modules.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": {
+                          borderBottom: 0,
+                        },
+                      }}
+                    >
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
                         {modules.id}
                       </TableCell>

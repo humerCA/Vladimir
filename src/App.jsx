@@ -5,19 +5,21 @@ import Confirmation from "./Components/Reusable/Confirmation";
 import Modules from "./Pages/Masterlist/Modules";
 import UserAccounts from "./Pages/Masterlist/UserAccounts";
 import ServiceProvider from "./Pages/Masterlist/ServiceProvider";
+import Category from "./Pages/Masterlist/Category";
+import Supplier from "./Pages/Masterlist/Supplier";
 
 // ROUTER
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { LoginRoutes, PrivateRoutes } from "./Routes/PrivateRoutes";
 
 import { closeToast } from "./Redux/StateManagement/toastSlice";
+import { closeDrawer } from "./Redux/StateManagement/drawerSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 // MUI
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Dialog, Snackbar, SwipeableDrawer } from "@mui/material";
-import Category from "./Pages/Masterlist/Category";
 
 const router = createBrowserRouter([
   {
@@ -60,7 +62,7 @@ const router = createBrowserRouter([
 
               {
                 path: "supplier",
-                // element: <Supplier />,
+                element: <Supplier />,
               },
 
               {

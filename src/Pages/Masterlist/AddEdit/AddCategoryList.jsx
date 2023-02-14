@@ -69,7 +69,6 @@ const AddUserAccount = (props) => {
     isLoading: isSedarLoading,
     isError: isSedarError,
   } = useGetSedarUsersApiQuery();
-  console.log(sedarData);
 
   const {
     handleSubmit,
@@ -82,15 +81,9 @@ const AddUserAccount = (props) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      sedar_employee: null,
-      employee_id: "",
-      first_name: "",
-      last_name: "",
-      department: "",
-      position: "",
-      username: "",
-      role_id: 1,
-      user_permission: "",
+      service_provider_id: "",
+      major_category_id: "",
+      minor_category_id: "",
     },
   });
 
@@ -159,7 +152,7 @@ const AddUserAccount = (props) => {
           color="secondary.main"
           sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
         >
-          {data.status ? "EDIT USER" : "ADD USER"}
+          {data.status ? "EDIT CATEGORY" : "ADD CATEGORY"}
         </Typography>
       </Box>
 
@@ -173,143 +166,33 @@ const AddUserAccount = (props) => {
             color="secondary.main"
             sx={{ fontFamily: "Anton", fontSize: "1rem" }}
           >
-            EMPLOYEE DETAILS
+            CATEGORY
           </Typography>
 
           <CustomAutoComplete
-            required
-            includeInputInList
-            name="sedar_employee"
+            autoComplete
+            name="major"
             control={control}
-            options={sedarData}
-            loading={isSedarLoading}
-            getOptionLabel={(option) => option.general_info?.full_id_number}
-            isOptionEqualToValue={(option, value) =>
-              option.general_info?.full_id_number ===
-              value.general_info?.full_id_number
-            }
+            options={["HIGH", "MEDIUM", "LOW"]}
             size="small"
-            onChange={(_, value) => {
-              setValue("employee_id", value.general_info.full_id_number);
-              setValue("first_name", value.general_info.first_name);
-              setValue("last_name", value.general_info.last_name);
-              setValue("department", value.unit_info.department_name);
-              setValue("position", value.position_info.position_name);
-              return value;
-            }}
+            isOptionEqualToValue={(option, value) => option === value}
             renderInput={(params) => (
               <TextField
+                color="secondary"
                 {...params}
                 label={
                   <>
-                    Employee ID <span style={{ color: "red" }}>*</span>
+                    Urgency Level <span style={{ color: "red" }}>*</span>
                   </>
                 }
                 sx={{
                   ".MuiInputBase-root": {
                     borderRadius: "12px",
-                    backgroundColor: "white",
+                    background: "white",
                   },
                 }}
-                color="secondary"
-                error={errors.sedar_employee?.message}
-                helperText={errors.sedar_employee?.message}
-              />
-            )}
-            disablePortal
-            filterOptions={filterOptions}
-          />
-
-          <CustomTextField
-            control={control}
-            name="first_name"
-            label="Firstname"
-            type="text"
-            color="secondary"
-            size="small"
-            fullWidth
-            disabled
-          />
-
-          <CustomTextField
-            control={control}
-            name="last_name"
-            label="Last Name"
-            type="text"
-            color="secondary"
-            size="small"
-            fullWidth
-            disabled
-          />
-
-          <CustomTextField
-            control={control}
-            name="department"
-            label="Department"
-            type="text"
-            color="secondary"
-            size="small"
-            fullWidth
-            disabled
-          />
-
-          <CustomTextField
-            control={control}
-            name="position"
-            label="Position"
-            type="text"
-            color="secondary"
-            size="small"
-            fullWidth
-            disabled
-          />
-
-          <Divider sx={{ py: 0.5 }} />
-
-          <Typography
-            color="secondary.main"
-            sx={{ fontFamily: "Anton", fontSize: "1rem" }}
-          >
-            USERNAME AND PERMISSION
-          </Typography>
-
-          <CustomTextField
-            control={control}
-            name="username"
-            label={
-              <>
-                Username <span style={{ color: "red" }}>*</span>
-              </>
-            }
-            type="text"
-            color="secondary"
-            size="small"
-            error={errors.username?.message}
-            helperText={errors.username?.message}
-            fullWidth
-          />
-
-          <CustomAutoComplete
-            autoComplete
-            name="user_permission"
-            control={control}
-            options={["Fixed Asset", "Warehouse", "H&M"]}
-            size="small"
-            renderInput={(params) => (
-              <TextField
-                color="secondary"
-                {...params}
-                label={
-                  <>
-                    User Peremission <span style={{ color: "red" }}>*</span>
-                  </>
-                }
-                sx={{
-                  backgroundColor: "white",
-                  ".MuiInputBase-root": { borderRadius: "12px" },
-                }}
-                error={errors.user_permission?.message}
-                helperText={errors.user_permission?.message}
+                error={errors.urgency_level?.message}
+                helperText={errors.urgency_level?.message}
               />
             )}
             disablePortal

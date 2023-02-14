@@ -156,7 +156,7 @@ const ServiceProvider = () => {
         />
 
         <Box>
-          <TableContainer>
+          <TableContainer className="mcontainer__th-body">
             <Table className="mcontainer__table" stickyHeader>
               <TableHead>
                 <TableRow>
@@ -188,7 +188,14 @@ const ServiceProvider = () => {
               <TableBody>
                 {serviceProviderSuccess &&
                   serviceProviderData.data.map((data) => (
-                    <TableRow key={data.id}>
+                    <TableRow
+                      key={data.id}
+                      sx={{
+                        "&:last-child td, &:last-child th": {
+                          borderBottom: 0,
+                        },
+                      }}
+                    >
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
                         {data.id}
                       </TableCell>

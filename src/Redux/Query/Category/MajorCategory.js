@@ -1,0 +1,61 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export const majorCategoryApi = createApi({
+    reducerPath: "majorCategoryApi",
+    tagTypes: ["majorCategory"],
+
+    baseQuery: fetchBaseQuery({ 
+        baseUrl: "http://127.0.0.1:8000/api",
+        prepareHeaders: (headers) => {
+            const token = localStorage.getItem("token");
+
+            headers.set('Authorization', `Bearer ${token}`);
+            return headers
+        }
+     }),
+
+    endpoints: (builder) => ({
+        getMajorCategoryApi: builder.query({
+            query: (params) => `/major-categories/search?search=${params.search}&page=${params.page}&limit=${params.limit}&status=${params.status}`,
+            providesTags: ["majorCategory"]
+        }),
+
+        getMajorCategoryIdApi: builder.query({
+            query: (id) => `/major-category/${id}/`,
+            providesTags: ["majorCategory"]
+        }),
+
+        putMajorCategoryStatusApi: builder.mutation ({
+            query: ({id, status}) => ({
+                url: `/major-category/archived-major-category/${id}`,
+                method: "PUT",
+                body: {
+                    status: status
+                }
+                
+            }),
+            invalidatesTags: ["majorCategory"]
+        }),
+
+        postMajorCategoryApi: builder.mutation({
+            query: (data) => ({
+                url: `/major-category/`,
+                method: "POST",
+                body: data
+            }),
+            invalidatesTags:  ["majorCategory"]
+        }),
+
+        updateMajorCategoryApi: builder.mutation({
+            query: ({id, ...data}) => ({
+                url: `/major-category/${id}`,
+                method: "PUT",
+                body: data
+            }),
+            invalidatesTags:  ["majorCategory"]
+        }),
+
+    })
+})
+
+export const { useGetMajorCategoryApiQuery, useGetMajorCategoryIdApiQuery, usePutMajorCategoryStatusApiMutation, usePostMajorCategoryApiMutation, useUpdateMajorCategoryApiMutation } = majorCategoryApi

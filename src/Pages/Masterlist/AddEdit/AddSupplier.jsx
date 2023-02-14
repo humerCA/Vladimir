@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
+import Numberfield from "../../../Components/Reusable/CustomNumberField";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,33 +11,35 @@ import { Box, Button, Typography } from "@mui/material";
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
 import { useDispatch } from "react-redux";
 import {
-  usePostServiceProviderApiMutation,
-  useUpdateServiceProviderApiMutation,
-} from "../../../Redux/Query/ServiceProviderApi";
+  usePostSupplierApiMutation,
+  useUpdateSupplierApiMutation,
+} from "../../../Redux/Query/SupplierApi";
 
 const schema = yup.object().shape({
   id: yup.string(),
-  service_provider_name: yup.string().required(),
+  supplier_name: yup.string().required(),
+  address: yup.string().required(),
+  contact_no: yup.string().required(),
 });
 
-const AddServiceProvider = (props) => {
+const AddSupplier = (props) => {
   const { data, onUpdateResetHandler } = props;
   const dispatch = useDispatch();
 
   const [
-    postServiceProvider,
+    postSupplier,
     { isLoading, isSuccess: isPostSuccess, data: postData, isError },
-  ] = usePostServiceProviderApiMutation();
+  ] = usePostSupplierApiMutation();
 
   const [
-    updateServiceProvider,
+    updateSupplier,
     {
       isLoading: isUpdateLoading,
       isSuccess: isUpdateSuccess,
       data: updateData,
       isError: isUpdateError,
     },
-  ] = useUpdateServiceProviderApiMutation();
+  ] = useUpdateSupplierApiMutation();
 
   const {
     handleSubmit,
@@ -49,7 +52,9 @@ const AddServiceProvider = (props) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      service_provider_name: "",
+      supplier_name: "",
+      address: "",
+      contact_no: "",
     },
   });
 
@@ -66,7 +71,9 @@ const AddServiceProvider = (props) => {
   useEffect(() => {
     if (data.status) {
       setValue("id", data.id);
-      setValue("service_provider_name", data.service_provider_name);
+      setValue("supplier_name", data.supplier_name);
+      setValue("address", data.address);
+      setValue("contact_no", data.contact_no);
     }
   }, [data]);
 
@@ -75,10 +82,10 @@ const AddServiceProvider = (props) => {
       setTimeout(() => {
         onUpdateResetHandler();
       }, 500);
-      updateServiceProvider(formData);
+      updateSupplier(formData);
       return;
     }
-    postServiceProvider(formData);
+    postSupplier(formData);
     console.log(formData);
   };
 
@@ -96,7 +103,7 @@ const AddServiceProvider = (props) => {
         color="secondary.main"
         sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
       >
-        {data.status ? "Edit Service Provider" : "Add Service Provider"}
+        {data.status ? "Edit Supplier" : "Add Supplier"}
       </Typography>
 
       <Box
@@ -107,24 +114,69 @@ const AddServiceProvider = (props) => {
         <CustomTextField
           required
           control={control}
-          name="service_provider_name"
-          label="Service Provider"
+          name="supplier_name"
+          label="Supplier"
           type="text"
           color="secondary"
           size="small"
-          error={errors.service_provider_name?.message}
-          helperText={errors.service_provider_name?.message}
+          error={errors.supplier_name?.message}
+          helperText={errors.supplier_name?.message}
           fullWidth
         />
+        <CustomTextField
+          required
+          control={control}
+          name="address"
+          label="Address"
+          type="text"
+          color="secondary"
+          size="small"
+          error={errors.address?.message}
+          helperText={errors.address?.message}
+          fullWidth
+        />
+
+        <CustomTextField
+          required
+          control={control}
+          name="contact_no"
+          label="Contact Number"
+          type="text"
+          color="secondary"
+          size="small"
+          error={errors.contact_no?.message}
+          helperText={errors.contact_no?.message}
+          fullWidth
+        />
+
+        {/* <Numberfield
+          required
+          control={control}
+          name="contact_no"
+          label="Contact Number"
+          type="number"
+          color="secondary"
+          size="small"
+          error={errors.contact_no?.message}
+          helperText={errors.contact_no?.message}
+          fullWidth
+        /> */}
+
         <Box className="add-masterlist__buttons">
           <Button
             type="submit"
             variant="contained"
             size="small"
             disabled={
-              (errors.service_provider_name ? true : false) ||
-              watch("service_provider_name") === undefined ||
-              watch("service_provider_name") === ""
+              (errors.supplier_name ? true : false) ||
+              watch("supplier_name") === undefined ||
+              watch("supplier_name") === "" ||
+              (errors.address ? true : false) ||
+              watch("address") === undefined ||
+              watch("address") === "" ||
+              (errors.contact_no ? true : false) ||
+              watch("contact_no") === undefined ||
+              watch("contact_no") === ""
             }
           >
             Create
@@ -144,4 +196,4 @@ const AddServiceProvider = (props) => {
   );
 };
 
-export default AddServiceProvider;
+export default AddSupplier;

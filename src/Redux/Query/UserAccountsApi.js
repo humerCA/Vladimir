@@ -63,14 +63,6 @@ export const userAccountsApi = createApi({
             invalidatesTags:  ["User"]
         }),
 
-        getSedarUserApi: builder.query({
-            query: ({id, ...data}) => ({
-                url: `http://rdfsedar.com/api/data/employees/`,
-                method: "PUT",
-                body: data
-            }),
-            invalidatesTags:  ["User"]
-        }),
 
     }),
 })

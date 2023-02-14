@@ -17,6 +17,8 @@ const Autocomplete = ({
         return (
           <MuiAutocomplete
             {...autocomplete}
+            autoComplete
+            autoHighlight
             value={value}
             // onChange={(_, value) => onChange(value)}
             onChange={(e, value) => {
