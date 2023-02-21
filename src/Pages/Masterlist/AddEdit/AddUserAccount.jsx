@@ -27,6 +27,7 @@ import {
   useUpdateUserApiMutation,
 } from "../../../Redux/Query/UserAccountsApi";
 import { useGetSedarUsersApiQuery } from "../../../Redux/Query/SedarUserApi";
+import { openToast } from "../../../Redux/StateManagement/toastSlice";
 
 const schema = yup.object().shape({
   employee_id: yup.string().required(),
@@ -39,23 +40,20 @@ const schema = yup.object().shape({
   department: yup.string().required(),
   position: yup.string().required(),
   username: yup.string().required().label("Username"),
-  role_id: yup.string().required().label("Username"),
   user_permission: yup.string().required().label("User permission"),
 });
 
 const AddUserAccount = (props) => {
-  const [selectedOption, setSelectedOption] = useState(null);
-
   const { data, onUpdateResetHandler } = props;
   const dispatch = useDispatch();
 
   const [
-    postModule,
+    postUser,
     { isLoading, isSuccess: isPostSuccess, data: postData, isError },
   ] = usePostUserApiMutation();
 
   const [
-    updateModule,
+    updateUser,
     {
       isLoading: isUpdateLoading,
       isSuccess: isUpdateSuccess,
@@ -98,9 +96,21 @@ const AddUserAccount = (props) => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: postData.message,
+          duration: 5000,
+        })
+      );
     } else if (isUpdateSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: updateData.message,
+          duration: 5000,
+        })
+      );
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -122,7 +132,7 @@ const AddUserAccount = (props) => {
       setTimeout(() => {
         onUpdateResetHandler();
       }, 500);
-      updateModule(formData);
+      updateUser(formData);
       return;
     }
     const obj = {
@@ -212,8 +222,8 @@ const AddUserAccount = (props) => {
                   },
                 }}
                 color="secondary"
-                error={errors.sedar_employee?.message}
-                helperText={errors.sedar_employee?.message}
+                error={errors?.sedar_employee?.message}
+                helperText={errors?.sedar_employee?.message}
               />
             )}
             disablePortal
@@ -284,8 +294,8 @@ const AddUserAccount = (props) => {
             type="text"
             color="secondary"
             size="small"
-            error={errors.username?.message}
-            helperText={errors.username?.message}
+            error={errors?.username?.message}
+            helperText={errors?.username?.message}
             fullWidth
           />
 
@@ -308,8 +318,8 @@ const AddUserAccount = (props) => {
                   backgroundColor: "white",
                   ".MuiInputBase-root": { borderRadius: "12px" },
                 }}
-                error={errors.user_permission?.message}
-                helperText={errors.user_permission?.message}
+                error={errors?.user_permission?.message}
+                helperText={errors?.user_permission?.message}
               />
             )}
             disablePortal
@@ -317,7 +327,7 @@ const AddUserAccount = (props) => {
 
           <Box className="add-userAccount__buttons">
             <Button size="small" type="submit" variant="contained">
-              ADD USER
+              {data.status ? "Update" : "Create"}
             </Button>
 
             <Button

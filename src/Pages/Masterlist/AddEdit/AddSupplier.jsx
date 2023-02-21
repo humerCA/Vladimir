@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
-import Numberfield from "../../../Components/Reusable/CustomNumberField";
+import CustomPatternfield from "../../../Components/Reusable/CustomPatternfield";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, InputAdornment, Typography } from "@mui/material";
 
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
 import { useDispatch } from "react-redux";
@@ -14,12 +14,16 @@ import {
   usePostSupplierApiMutation,
   useUpdateSupplierApiMutation,
 } from "../../../Redux/Query/SupplierApi";
+import { openToast } from "../../../Redux/StateManagement/toastSlice";
 
 const schema = yup.object().shape({
   id: yup.string(),
   supplier_name: yup.string().required(),
   address: yup.string().required(),
-  contact_no: yup.string().required(),
+  contact_no: yup
+    .string()
+    .required()
+    .typeError("Contact Number is a required field"),
 });
 
 const AddSupplier = (props) => {
@@ -54,26 +58,41 @@ const AddSupplier = (props) => {
     defaultValues: {
       supplier_name: "",
       address: "",
-      contact_no: "",
+      contact_no: null,
     },
   });
+
+  // console.log(watch("contact_no"));
 
   useEffect(() => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: postData.message,
+          duration: 5000,
+        })
+      );
     } else if (isUpdateSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: updateData.message,
+          duration: 5000,
+        })
+      );
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
   useEffect(() => {
     if (data.status) {
+      const contact = data.contact_no.slice(2);
       setValue("id", data.id);
       setValue("supplier_name", data.supplier_name);
       setValue("address", data.address);
-      setValue("contact_no", data.contact_no);
+      setValue("contact_no", contact);
     }
   }, [data]);
 
@@ -82,11 +101,16 @@ const AddSupplier = (props) => {
       setTimeout(() => {
         onUpdateResetHandler();
       }, 500);
-      updateSupplier(formData);
+      const newObj = { ...formData, contact_no: "09" + formData.contact_no };
+      updateSupplier(newObj);
+      console.log(data);
+
       return;
     }
-    postSupplier(formData);
-    console.log(formData);
+    if (formData.contact_no) {
+      const newObj = { ...formData, contact_no: "09" + formData.contact_no };
+      postSupplier(newObj);
+    }
   };
 
   const handleCloseDrawer = () => {
@@ -119,8 +143,8 @@ const AddSupplier = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors.supplier_name?.message}
-          helperText={errors.supplier_name?.message}
+          error={errors?.supplier_name?.message}
+          helperText={errors?.supplier_name?.message}
           fullWidth
         />
         <CustomTextField
@@ -131,36 +155,26 @@ const AddSupplier = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors.address?.message}
-          helperText={errors.address?.message}
+          error={errors?.address?.message}
+          helperText={errors?.address?.message}
           fullWidth
         />
 
-        <CustomTextField
+        <CustomPatternfield
           required
           control={control}
           name="contact_no"
           label="Contact Number"
+          color="secondary"
           type="text"
-          color="secondary"
           size="small"
-          error={errors.contact_no?.message}
-          helperText={errors.contact_no?.message}
+          error={errors?.contact_no?.message}
+          helperText={errors?.contact_no?.message}
+          format="(09##) - ### - ####"
+          allowEmptyFormatting
+          valueIsNumericString
           fullWidth
         />
-
-        {/* <Numberfield
-          required
-          control={control}
-          name="contact_no"
-          label="Contact Number"
-          type="number"
-          color="secondary"
-          size="small"
-          error={errors.contact_no?.message}
-          helperText={errors.contact_no?.message}
-          fullWidth
-        /> */}
 
         <Box className="add-masterlist__buttons">
           <Button
@@ -168,18 +182,18 @@ const AddSupplier = (props) => {
             variant="contained"
             size="small"
             disabled={
-              (errors.supplier_name ? true : false) ||
+              (errors?.supplier_name ? true : false) ||
               watch("supplier_name") === undefined ||
               watch("supplier_name") === "" ||
-              (errors.address ? true : false) ||
+              (errors?.address ? true : false) ||
               watch("address") === undefined ||
               watch("address") === "" ||
-              (errors.contact_no ? true : false) ||
+              (errors?.contact_no ? true : false) ||
               watch("contact_no") === undefined ||
-              watch("contact_no") === ""
+              watch("contact_no") === null
             }
           >
-            Create
+            {data.status ? "Update" : "Create"}
           </Button>
 
           <Button

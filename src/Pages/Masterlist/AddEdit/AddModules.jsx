@@ -8,6 +8,7 @@ import * as yup from "yup";
 
 import { Box, Button, Typography } from "@mui/material";
 
+import { openToast } from "../../../Redux/StateManagement/toastSlice";
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
 import { useDispatch } from "react-redux";
 import {
@@ -17,7 +18,7 @@ import {
 
 const schema = yup.object().shape({
   id: yup.string(),
-  module_name: yup.string().required(),
+  module_name: yup.string().required().label("Module Name"),
 });
 
 const AddModules = (props) => {
@@ -58,9 +59,21 @@ const AddModules = (props) => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: postData.message,
+          duration: 5000,
+        })
+      );
     } else if (isUpdateSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: updateData.message,
+          duration: 5000,
+        })
+      );
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -77,6 +90,8 @@ const AddModules = (props) => {
         onUpdateResetHandler();
       }, 500);
       updateModule(formData);
+
+      console.log(formData);
       return;
     }
     postModule(formData);
@@ -112,8 +127,8 @@ const AddModules = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors.module_name?.message}
-          helperText={errors.module_name?.message}
+          error={errors?.module_name?.message}
+          helperText={errors?.module_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
@@ -122,12 +137,12 @@ const AddModules = (props) => {
             variant="contained"
             size="small"
             disabled={
-              (errors.module_name ? true : false) ||
+              (errors?.module_name ? true : false) ||
               watch("module_name") === undefined ||
               watch("module_name") === ""
             }
           >
-            Create
+            {data.status ? "Update" : "Create"}
           </Button>
 
           <Button

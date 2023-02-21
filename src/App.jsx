@@ -20,6 +20,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Dialog, Snackbar, SwipeableDrawer } from "@mui/material";
+import RoleManagement from "./Pages/RoleManagement";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
                 // element: <CreateAssetRegistration />,
               },
             ],
+          },
+          {
+            path: "role-management",
+            element: <RoleManagement />,
           },
           {
             path: "asset-for-tagging",

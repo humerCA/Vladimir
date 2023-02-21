@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import Moment from "moment";
-import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
-import ActionMenu from "../../Components/Reusable/ActionMenu";
-import AddModules from "./AddEdit/AddModules";
+import MasterlistToolbar from "../Components/Reusable/MasterlistToolbar";
+import ActionMenu from "../Components/Reusable/ActionMenu";
+import AddRole from "./Masterlist/AddEdit/AddRole";
 
 // RTK
-import { useDispatch, useSelector } from "react-redux";
-import { openToast } from "../../Redux/StateManagement/toastSlice";
+import { useDispatch } from "react-redux";
+import { openToast } from "../Redux/StateManagement/toastSlice";
 import {
   openConfirm,
   closeConfirm,
-} from "../../Redux/StateManagement/confirmSlice";
-import { usePostModuleStatusApiMutation } from "../../Redux/Query/ModulesApi";
-import { useGetModulesApiQuery } from "../../Redux/Query/ModulesApi";
+} from "../Redux/StateManagement/confirmSlice";
+
+import {
+  usePostRoleStatusApiMutation,
+  useGetRoleApiQuery,
+} from "../Redux/Query/RoleManagementApi";
+
+import { useSelector } from "react-redux";
 
 // MUI
 import {
@@ -28,17 +33,18 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
-import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
 
-const Modules = () => {
+const Role = () => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(1);
-  const [updateModule, setUpdateModule] = useState({
+  const [updateRole, setUpdateRole] = useState({
     status: false,
     id: null,
-    module_name: "",
+    role_name: "",
+    address: "",
+    contact_no: null,
   });
 
   const drawer = useSelector((state) => state.drawer);
@@ -53,11 +59,11 @@ const Modules = () => {
   };
 
   const {
-    data: modules,
-    isLoading: modulesLoading,
-    isSuccess: modulesSuccess,
-    isError: modulesError,
-  } = useGetModulesApiQuery(
+    data: roleData,
+    isLoading: roleLoading,
+    isSuccess: roleSuccess,
+    isError: roleError,
+  } = useGetRoleApiQuery(
     {
       page: page,
       limit: limit,
@@ -67,7 +73,7 @@ const Modules = () => {
     { refetchOnMountOrArgChange: true }
   );
 
-  const [postModuleStatusApi, { isLoading }] = usePostModuleStatusApiMutation();
+  const [postRoleStatusApi, { isLoading }] = usePostRoleStatusApiMutation();
 
   const dispatch = useDispatch();
 
@@ -93,7 +99,7 @@ const Modules = () => {
 
         onConfirm: async () => {
           try {
-            const result = await postModuleStatusApi({
+            const result = await postRoleStatusApi({
               id: id,
               status: status === "active" ? false : true,
             }).unwrap();
@@ -114,19 +120,23 @@ const Modules = () => {
   };
 
   const onUpdateHandler = (props) => {
-    const { id, module_name } = props;
-    setUpdateModule({
+    const { id, role_name, address, contact_no } = props;
+    setUpdateRole({
       status: true,
       id: id,
-      module_name: module_name,
+      role_name: role_name,
+      address: address,
+      contact_no: contact_no,
     });
   };
 
   const onUpdateResetHandler = () => {
-    setUpdateModule({
+    setUpdateRole({
       status: false,
       id: null,
-      module_name: "",
+      role_name: "",
+      address: "",
+      contact_no: null,
     });
   };
 
@@ -140,11 +150,8 @@ const Modules = () => {
         className="mcontainer__title"
         sx={{ fontFamily: "Anton", fontSize: "2rem" }}
       >
-        Modules
+        Role Management
       </Typography>
-      {/* 
-      {isLoading && <MasterlistSkeleton />}
-      {modulesSuccess && <Error />} */}
 
       <Box className="mcontainer__wrapper">
         <MasterlistToolbar
@@ -155,7 +162,7 @@ const Modules = () => {
         />
 
         <Box>
-          <TableContainer className="mcontainer__th-body">
+          <TableContainer>
             <Table className="mcontainer__table" stickyHeader>
               <TableHead>
                 <TableRow>
@@ -163,7 +170,11 @@ const Modules = () => {
                     Id
                   </TableCell>
 
-                  <TableCell className="mcontainer__th-cell">Module</TableCell>
+                  <TableCell className="mcontainer__th-cell">Role</TableCell>
+
+                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                    Access Permission
+                  </TableCell>
 
                   <TableCell className="mcontainer__th-cell mcontainer__text-center">
                     Status
@@ -183,10 +194,10 @@ const Modules = () => {
               </TableHead>
 
               <TableBody>
-                {modulesSuccess &&
-                  modules.data.map((modules) => (
+                {roleSuccess &&
+                  roleData.data.map((data) => (
                     <TableRow
-                      key={modules.id}
+                      key={data.id}
                       sx={{
                         "&:last-child td, &:last-child th": {
                           borderBottom: 0,
@@ -194,15 +205,19 @@ const Modules = () => {
                       }}
                     >
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {modules.id}
+                        {data.id}
                       </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
-                        {modules.module_name}
+                      <TableCell className="mcontainer__tr-cell">
+                        {data.role_name}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {modules.is_active ? (
+                        View
+                      </TableCell>
+
+                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                        {data.is_active ? (
                           <Typography
                             color="success.main"
                             sx={{
@@ -235,13 +250,13 @@ const Modules = () => {
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {Moment(modules.created_at).format("MMM DD, YYYY")}
+                        {Moment(data.created_at).format("MMM DD, YYYY")}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
                         <ActionMenu
                           status={status}
-                          data={modules}
+                          data={data}
                           onUpdateHandler={onUpdateHandler}
                           onArchiveRestoreHandler={onArchiveRestoreHandler}
                         />
@@ -259,12 +274,12 @@ const Modules = () => {
               5,
               10,
               15,
-              { label: "All", value: parseInt(modules?.total) },
+              { label: "All", value: parseInt(roleData?.total) },
             ]}
             component="div"
-            count={modulesSuccess ? modules.total : 0}
-            page={modulesSuccess ? modules.current_page - 1 : 0}
-            rowsPerPage={modulesSuccess ? parseInt(modules?.per_page) : 5}
+            count={roleSuccess ? roleData.total : 0}
+            page={roleSuccess ? roleData.current_page - 1 : 0}
+            rowsPerPage={roleSuccess ? parseInt(roleData?.per_page) : 5}
             onPageChange={pageHandler}
             onRowsPerPageChange={limitHandler}
           />
@@ -272,8 +287,8 @@ const Modules = () => {
       </Box>
 
       <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
-        <AddModules
-          data={updateModule}
+        <AddRole
+          data={updateRole}
           onUpdateResetHandler={onUpdateResetHandler}
         />
       </Dialog>
@@ -281,4 +296,4 @@ const Modules = () => {
   );
 };
 
-export default Modules;
+export default Role;

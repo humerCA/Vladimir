@@ -45,6 +45,7 @@ const breadcrumbNameMap = {
   "/masterlist/category": "Category",
   "/masterlist/supplier": "Supplier",
   "/masterlist/create-asset-registration": "Create Asset Registration",
+  "/role-management": "Role Management",
   "/asset-for-tagging": "Asset for Tagging",
   "/asset-list": "Asset List",
   "/request": "Request",

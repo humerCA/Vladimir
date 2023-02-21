@@ -34,6 +34,7 @@ import {
   DatasetRounded,
   AccountBox,
   LocalOffer,
+  RecentActors,
   ManageAccountsSharp,
   Category,
   Inventory2Rounded,
@@ -92,7 +93,7 @@ const Sidebar = () => {
         },
         {
           label: "Service Provider",
-          icon: ManageAccountsSharp,
+          icon: RecentActors,
           path: "/masterlist/service-provider",
           permission: [],
         },
@@ -122,6 +123,13 @@ const Sidebar = () => {
         setReportCollapse(false);
         dispatch(openSidebar());
       },
+    },
+    {
+      label: "Role Management",
+      icon: ManageAccountsSharp,
+      path: "/role-management",
+      permission: [],
+      setter: closeCollapse,
     },
     {
       label: "Asset for Tagging",
@@ -268,9 +276,6 @@ const Sidebar = () => {
               color="secondary"
               sx={{
                 zIndex: 0,
-                // fontFamily: "Agency FB",
-                // fontFamily: "Britannic",
-                // fontFamily: "Copperplate Gothic",
                 fontFamily: "Josefin Sans",
                 fontSize: "22px",
                 letterSpacing: "6px",

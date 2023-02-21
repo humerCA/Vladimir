@@ -20,6 +20,11 @@ export const minorCategoryApi = createApi({
             providesTags: ["minorCategory"]
         }),
 
+        getMinorCategoryAllApi: builder.query({
+            query: (id) => `/minor-category/`,
+            providesTags: ["minorCategory"]
+        }),
+
         getMinorCategoryIdApi: builder.query({
             query: (id) => `/minor-category/${id}/`,
             providesTags: ["minorCategory"]
@@ -58,4 +63,4 @@ export const minorCategoryApi = createApi({
     })
 })
 
-export const { useGetMinorCategoryApiQuery, useGetMinorCategoryIdApiQuery, usePutMinorCategoryStatusApiMutation, usePostMinorCategoryApiMutation, useUpdateMinorCategoryApiMutation } = minorCategoryApi
+export const { useGetMinorCategoryApiQuery, useGetMinorCategoryAllApiQuery, useGetMinorCategoryIdApiQuery, usePutMinorCategoryStatusApiMutation, usePostMinorCategoryApiMutation, useUpdateMinorCategoryApiMutation } = minorCategoryApi

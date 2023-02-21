@@ -55,7 +55,7 @@ export const categoryListApi = createApi({
             invalidatesTags:  ["categoryList"]
         }),
 
-    })
+    }) 
 })
 
 export const { useGetCategoryListApiQuery, useGetCategoryListIdApiQuery, usePutCategoryListStatusApiMutation, usePostCategoryListApiMutation, useUpdateCategoryListApiMutation } = categoryListApi

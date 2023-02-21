@@ -1,0 +1,40 @@
+@use "../index.scss";
+
+.errorFetching {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: index.$secondaryBg;
+  box-shadow: 10px, 20px, 10px;
+  border-radius: 20px;
+  height: 400px;
+  width: 100%;
+  box-shadow: 0px 0px 17px -8px rgba(0, 0, 0, 1);
+  margin-top: 20px;
+  margin-bottom: 50px;
+
+  &__wrapper {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-align: center;
+    margin-top: 10%;
+  }
+
+  & &__svgBg {
+    position: absolute;
+    z-index: 0;
+    background-image: url("../assets/SVG/SWR.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: bottom;
+    height: 80%;
+    width: 80%;
+    bottom: 0;
+  }
+}

@@ -20,6 +20,11 @@ export const majorCategoryApi = createApi({
             providesTags: ["majorCategory"]
         }),
 
+        getMajorCategoryAllApi: builder.query({
+            query: (id) => `/major-category/`,
+            providesTags: ["majorCategory"]
+        }),
+
         getMajorCategoryIdApi: builder.query({
             query: (id) => `/major-category/${id}/`,
             providesTags: ["majorCategory"]
@@ -58,4 +63,4 @@ export const majorCategoryApi = createApi({
     })
 })
 
-export const { useGetMajorCategoryApiQuery, useGetMajorCategoryIdApiQuery, usePutMajorCategoryStatusApiMutation, usePostMajorCategoryApiMutation, useUpdateMajorCategoryApiMutation } = majorCategoryApi
+export const { useGetMajorCategoryApiQuery, useGetMajorCategoryAllApiQuery, useGetMajorCategoryIdApiQuery, usePutMajorCategoryStatusApiMutation, usePostMajorCategoryApiMutation, useUpdateMajorCategoryApiMutation } = majorCategoryApi

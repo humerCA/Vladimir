@@ -13,10 +13,11 @@ import {
   usePostServiceProviderApiMutation,
   useUpdateServiceProviderApiMutation,
 } from "../../../Redux/Query/ServiceProviderApi";
+import { openToast } from "../../../Redux/StateManagement/toastSlice";
 
 const schema = yup.object().shape({
   id: yup.string(),
-  service_provider_name: yup.string().required(),
+  service_provider_name: yup.string().required().label("Service Provider"),
 });
 
 const AddServiceProvider = (props) => {
@@ -57,9 +58,21 @@ const AddServiceProvider = (props) => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: postData.message,
+          duration: 5000,
+        })
+      );
     } else if (isUpdateSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: updateData.message,
+          duration: 5000,
+        })
+      );
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -112,8 +125,8 @@ const AddServiceProvider = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors.service_provider_name?.message}
-          helperText={errors.service_provider_name?.message}
+          error={errors?.service_provider_name?.message}
+          helperText={errors?.service_provider_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
@@ -122,12 +135,12 @@ const AddServiceProvider = (props) => {
             variant="contained"
             size="small"
             disabled={
-              (errors.service_provider_name ? true : false) ||
+              (errors?.service_provider_name ? true : false) ||
               watch("service_provider_name") === undefined ||
               watch("service_provider_name") === ""
             }
           >
-            Create
+            {data.status ? "Update" : "Create"}
           </Button>
 
           <Button

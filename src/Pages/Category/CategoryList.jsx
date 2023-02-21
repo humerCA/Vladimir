@@ -3,6 +3,7 @@ import Moment from "moment";
 import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
 import ActionMenu from "../../Components/Reusable/ActionMenu";
 import AddCategoryList from "../Masterlist/AddEdit/AddCategoryList";
+import CustomTableCollapse from "../../Components/Reusable/CustomTableCollapse";
 
 // RTK
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +21,6 @@ import {
 import {
   Box,
   Dialog,
-  Drawer,
   Table,
   TableBody,
   TableCell,
@@ -40,7 +40,9 @@ const CategoryList = () => {
   const [updateCategoryList, setUpdateCategoryList] = useState({
     status: false,
     id: null,
-    _category_name: "",
+    service_provider_id: null,
+    major_category_id: null,
+    minor_category_id: [],
   });
 
   const drawer = useSelector((state) => state.drawer);
@@ -117,12 +119,15 @@ const CategoryList = () => {
   };
 
   const onUpdateHandler = (props) => {
-    const { id, category_name, classification } = props;
+    const { id, service_provider, major_category, category_list_tag } = props;
     setUpdateCategoryList({
       status: true,
       id: id,
-      category_name: category_name,
-      classification: classification,
+      service_provider_id: service_provider,
+      major_category_id: major_category,
+      minor_category_id: category_list_tag.map((item) => {
+        return item.minor_category;
+      }),
     });
   };
 
@@ -130,8 +135,9 @@ const CategoryList = () => {
     setUpdateCategoryList({
       status: false,
       id: null,
-      category_name: "",
-      classification: "",
+      service_provider_id: null,
+      major_category_id: null,
+      minor_category_id: [],
     });
   };
 
@@ -139,24 +145,6 @@ const CategoryList = () => {
     setPage(1);
   };
 
-  const classOptions = (classification) => {
-    switch (classification) {
-      case "machinery_&_equipment":
-        return "Machinery & Equipment";
-
-      case "small_tools":
-        return "Small Tools";
-
-      case "vechicle":
-        return "Vehicle";
-
-      case "mobile_phone":
-        return "Mobile Phone";
-
-      default:
-        return "invalid classification";
-    }
-  };
   return (
     <Box className="mcontainer__wrapper">
       <MasterlistToolbar
@@ -166,104 +154,41 @@ const CategoryList = () => {
         onSetPage={setPage}
       />
 
-      <Box>
+      <Box className="mcontainer__wrapper">
         <TableContainer className="mcontainer__th-body-category">
           <Table className="mcontainer__table" stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Id
-                </TableCell>
+                <TableCell className="mcontainer__th-cell">Collapse</TableCell>
 
-                <TableCell
-                  className="mcontainer__th-cell"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Category
+                <TableCell className="mcontainer__th-cell">Category</TableCell>
+
+                <TableCell className="mcontainer__th-cell">
+                  Service Provider
                 </TableCell>
 
                 <TableCell className="mcontainer__th-cell mcontainer__text-center">
                   Status
                 </TableCell>
 
-                <TableCell
-                  className="mcontainer__th-cell mcontainer__text-center"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
+                <TableCell className="mcontainer__th-cell mcontainer__text-center">
                   Date Created
                 </TableCell>
 
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Action
-                </TableCell>
+                <TableCell className="mcontainer__th-cell">Action</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
-              {categoryListSuccess &&
+              {categoryListData &&
                 categoryListData.data.map((data) => (
-                  <TableRow
+                  <CustomTableCollapse
                     key={data.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": {
-                        borderBottom: 0,
-                      },
-                    }}
-                  >
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.id}
-                    </TableCell>
-
-                    <TableCell className="mcontainer__tr-cell">
-                      {data.category_name}
-                    </TableCell>
-
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.is_active ? (
-                        <Typography
-                          color="success.main"
-                          sx={{
-                            px: 1,
-                            maxWidth: "10ch",
-                            margin: "0 auto",
-                            fontSize: "13px",
-                            background: "#26f57c2a",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          ACTIVE
-                        </Typography>
-                      ) : (
-                        <Typography
-                          align="center"
-                          color="errorColor.main"
-                          sx={{
-                            px: 1,
-                            maxWidth: "10ch",
-                            margin: "0 auto",
-                            fontSize: "13px",
-                            background: "#fc3e3e34",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          INACTIVE
-                        </Typography>
-                      )}
-                    </TableCell>
-
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {Moment(data.created_at).format("MMM DD, YYYY")}
-                    </TableCell>
-
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                      <ActionMenu
-                        status={status}
-                        data={data}
-                        onUpdateHandler={onUpdateHandler}
-                        onArchiveRestoreHandler={onArchiveRestoreHandler}
-                      />
-                    </TableCell>
-                  </TableRow>
+                    data={data}
+                    status={status}
+                    onUpdateHandler={onUpdateHandler}
+                    onArchiveRestoreHandler={onArchiveRestoreHandler}
+                  />
                 ))}
             </TableBody>
           </Table>
@@ -292,9 +217,12 @@ const CategoryList = () => {
         />
       </Box>
 
-      <Drawer anchor="right" open={drawer} onClose={() => {}}>
-        <AddCategoryList data={updateCategoryList} />
-      </Drawer>
+      <Dialog anchor="right" open={drawer} onClose={() => {}}>
+        <AddCategoryList
+          data={updateCategoryList}
+          onUpdateResetHandler={onUpdateResetHandler}
+        />
+      </Dialog>
     </Box>
   );
 };

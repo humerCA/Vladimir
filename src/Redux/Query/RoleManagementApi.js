@@ -1,0 +1,63 @@
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
+
+export const roleManagementApi = createApi({
+    reducerPath: 'roleManagementApi',
+    tagTypes: ["Role"],
+
+    baseQuery: fetchBaseQuery({
+        baseUrl: "http://127.0.0.1:8000/api",
+        prepareHeaders: (headers) => {
+            const token = localStorage.getItem('token')
+
+            headers.set('Authorization', `Bearer ${token}`)
+            return headers
+        }
+    }),
+
+    endpoints: (builder) => ({
+        getRoleApi: builder.query ({
+            query: (params) => `search/role-management?search=${params.search}&page=${params.page}&limit=${params.limit}&status=${params.status}`,
+            providesTags: ["Role"]
+        }),
+
+        getRoleAllApi: builder.query ({
+            query: (params) => `/role-management/`,
+            providesTags: ["Role"]
+        }),
+
+        getRoleIdApi: builder.query ({
+            query: (id) => `role-management/${id}`,
+        }),
+        
+        postRoleStatusApi: builder.mutation({
+            query: ({id, status}) => ({
+                url: `/role-management/archived-role-management/${id}`,
+                method: "PUT",
+                body: {
+                    status: status
+                }
+            }),
+            invalidatesTags: ["Role"]
+        }),
+
+        postRoleApi: builder.mutation({
+            query: (data) => ({
+                url: `/role-management/`,
+                method: "POST",
+                body: data
+            }),
+            invalidatesTags: ["Role"]
+        }),
+
+        updateRoleApi: builder.mutation({
+            query: ({id, ...data}) => ({
+                url: `/role-management/${id}`,
+                method: "PUT",
+                body: data
+            }),
+            invalidatesTags: ["Role"]
+        }),
+    }),
+})
+
+export const { useGetRoleApiQuery, useGetRoleIdApiQuery, usePostRoleStatusApiMutation, usePostRoleApiMutation, useUpdateRoleApiMutation} = roleManagementApi

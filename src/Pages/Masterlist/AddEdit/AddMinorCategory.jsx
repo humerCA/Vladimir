@@ -26,6 +26,7 @@ import {
   usePostMinorCategoryApiMutation,
   useUpdateMinorCategoryApiMutation,
 } from "../../../Redux/Query/Category/MinorCategory";
+import { openToast } from "../../../Redux/StateManagement/toastSlice";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -77,9 +78,21 @@ const AddMinorCategory = (props) => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: postData.message,
+          duration: 5000,
+        })
+      );
     } else if (isUpdateSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: updateData.message,
+          duration: 5000,
+        })
+      );
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -139,8 +152,8 @@ const AddMinorCategory = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors.minor_category_name?.message}
-          helperText={errors.minor_category_name?.message}
+          error={errors?.minor_category_name?.message}
+          helperText={errors?.minor_category_name?.message}
           fullWidth
         />
 
@@ -163,8 +176,8 @@ const AddMinorCategory = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors.urgency_level?.message}
-              helperText={errors.urgency_level?.message}
+              error={errors?.urgency_level?.message}
+              helperText={errors?.urgency_level?.message}
             />
           )}
           disablePortal
@@ -227,19 +240,19 @@ const AddMinorCategory = (props) => {
             variant="contained"
             size="small"
             disabled={
-              (errors.minor_category_name ? true : false) ||
+              (errors?.minor_category_name ? true : false) ||
               watch("minor_category_name") === undefined ||
               watch("minor_category_name") === "" ||
-              (errors.urgency_level ? true : false) ||
+              (errors?.urgency_level ? true : false) ||
               watch("urgency_level") === undefined ||
               watch("urgency_level") === "" ||
-              (errors.personally_assign ? 1 : 0) ||
+              (errors?.personally_assign ? 1 : 0) ||
               watch("personally_assign") === null ||
-              (errors.evaluate_in_every_movement ? 1 : 0) ||
+              (errors?.evaluate_in_every_movement ? 1 : 0) ||
               watch("evaluate_in_every_movement") === null
             }
           >
-            Create
+            {data.status ? "Update" : "Create"}
           </Button>
 
           <Button

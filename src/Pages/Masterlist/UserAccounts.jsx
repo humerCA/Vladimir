@@ -49,7 +49,6 @@ const UserAccounts = () => {
     department_id: "",
     username: "",
     password: "",
-    role_id: 1,
     access_permission: [
       "Dashboard",
       "Masterlist",
@@ -135,11 +134,24 @@ const UserAccounts = () => {
   };
 
   const onUpdateHandler = (props) => {
-    const { id, module_name } = props;
+    const {
+      id,
+      employee_id,
+      first_name,
+      last_name,
+      department,
+      username,
+      access_permission,
+    } = props;
     setUpdateUser({
       status: true,
       id: id,
-      module_name: module_name,
+      employee_id: employee_id,
+      first_name: first_name,
+      last_name: last_name,
+      department: department,
+      username: username,
+      access_permission: access_permission,
     });
   };
 
@@ -147,7 +159,12 @@ const UserAccounts = () => {
     setUpdateUser({
       status: false,
       id: null,
-      module_name: "",
+      employee_id: "",
+      first_name: "",
+      last_name: "",
+      department: "",
+      username: "",
+      access_permission: [],
     });
   };
 
@@ -235,8 +252,8 @@ const UserAccounts = () => {
                     Lastname
                   </TableCell>
 
-                  <TableCell className="mcontainer__th-cell">
-                    Position
+                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                    Role
                   </TableCell>
 
                   <TableCell className="mcontainer__th-cell">
@@ -276,15 +293,15 @@ const UserAccounts = () => {
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell">
-                        {users.first_name}
+                        {users.firstname}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell">
-                        {users.last_name}
+                        {users.lastname}
                       </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell">
-                        {users.position}
+                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                        {users.role.role_name.toUpperCase()}
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell">
@@ -378,7 +395,10 @@ const UserAccounts = () => {
         </Box>
 
         <Drawer anchor="right" open={drawer} onClose={() => {}}>
-          <AddUserAccounts data={updateUser} />
+          <AddUserAccounts
+            data={updateUser}
+            onUpdateResetHandler={onUpdateResetHandler}
+          />
         </Drawer>
       </Box>
     </Box>

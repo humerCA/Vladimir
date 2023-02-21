@@ -116,14 +116,14 @@ img {
     padding: 10px 20px;
     color: $secondary;
     border-bottom: 3px solid $background;
-    overflow-y: auto;
+    overflow-y: overlay;
   }
 
   & &__tr-cell {
     font-size: small;
     padding: 10px 20px;
     border-bottom: 3px solid $background;
-    overflow-y: auto;
+    overflow-y: overlay;
 
     @media (max-height: 600px) {
       padding: 8px 20px;

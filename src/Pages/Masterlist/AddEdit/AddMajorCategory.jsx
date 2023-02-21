@@ -15,6 +15,7 @@ import {
   usePostMajorCategoryApiMutation,
   useUpdateMajorCategoryApiMutation,
 } from "../../../Redux/Query/Category/MajorCategory";
+import { openToast } from "../../../Redux/StateManagement/toastSlice";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -81,9 +82,21 @@ const AddMajorCategory = (props) => {
     if (isPostSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: postData.message,
+          duration: 5000,
+        })
+      );
     } else if (isUpdateSuccess) {
       reset();
       handleCloseDrawer();
+      dispatch(
+        openToast({
+          message: updateData.message,
+          duration: 5000,
+        })
+      );
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -157,11 +170,10 @@ const AddMajorCategory = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors.classification?.message}
-              helperText={errors.classification?.message}
+              error={errors?.classification?.message}
+              helperText={errors?.classification?.message}
             />
           )}
-          disablePortal
         />
 
         <CustomTextField
@@ -175,8 +187,8 @@ const AddMajorCategory = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors.major_category_name?.message}
-          helperText={errors.major_category_name?.message}
+          error={errors?.major_category_name?.message}
+          helperText={errors?.major_category_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
@@ -185,15 +197,15 @@ const AddMajorCategory = (props) => {
             variant="contained"
             size="small"
             disabled={
-              (errors.major_category_name ? true : false) ||
+              (errors?.major_category_name ? true : false) ||
               watch("major_category_name") === undefined ||
               watch("major_category_name") === "" ||
-              (errors.classification ? true : false) ||
+              (errors?.classification ? true : false) ||
               watch("classification") === undefined ||
               watch("classification") === ""
             }
           >
-            Create
+            {data.status ? "Update" : "Create"}
           </Button>
 
           <Button

@@ -223,8 +223,10 @@ const MinorCategory = () => {
                       {data.minor_category_name}
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center
-                    ">
+                    <TableCell
+                      className="mcontainer__tr-cell mcontainer__text-center
+                    "
+                    >
                       {data.urgency_level}
                     </TableCell>
 

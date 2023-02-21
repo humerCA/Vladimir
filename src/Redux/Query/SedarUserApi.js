@@ -20,7 +20,6 @@ export const sedarUsersApi = createApi({
             transformResponse: (response) => response.data,
             providesTags: ["User"]
         }),
-
     }),
 })
 

@@ -18,6 +18,7 @@ import { majorCategoryApi } from '../Query/Category/MajorCategory'
 import { minorCategoryApi } from '../Query/Category/MinorCategory'
 import { categoryListApi } from '../Query/Category/CategoryList'
 import { supplierApi } from '../Query/SupplierApi'
+import { roleManagementApi } from '../Query/RoleManagementApi'
 
 export const store =  configureStore({
     reducer: {
@@ -34,10 +35,11 @@ export const store =  configureStore({
         [minorCategoryApi.reducerPath]: minorCategoryApi.reducer,
         [categoryListApi.reducerPath]: categoryListApi.reducer,
         [supplierApi.reducerPath]: supplierApi.reducer,
+        [roleManagementApi.reducerPath]: roleManagementApi.reducer,
     },
 
     middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({serializableCheck: false,}).concat([modulesApi.middleware, userAccountsApi.middleware, sedarUsersApi.middleware, serviceProviderApi.middleware, majorCategoryApi.middleware, minorCategoryApi.middleware, categoryListApi.middleware, supplierApi.middleware]),
+    getDefaultMiddleware({serializableCheck: false,}).concat([modulesApi.middleware, userAccountsApi.middleware, sedarUsersApi.middleware, serviceProviderApi.middleware, majorCategoryApi.middleware, minorCategoryApi.middleware, categoryListApi.middleware, supplierApi.middleware, roleManagementApi.middleware]),
 })
 
 setupListeners(store.dispatch)

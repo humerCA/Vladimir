@@ -21,6 +21,10 @@ export const serviceProviderApi = createApi({
             providesTags: ["ServiceProvider"]
         }),
 
+        getServiceProviderAllApi: builder.query ({
+            query: (id) => `/service-provider/`,
+        }),
+
         getServiceProviderApi: builder.query ({
             query: (id) => `/service-provider/${id}`,
         }),
@@ -56,4 +60,4 @@ export const serviceProviderApi = createApi({
     }),
 })
 
-export const { useGetServiceProvidersApiQuery, useGetServiceProviderApiQuery, usePostServiceProviderStatusApiMutation, usePostServiceProviderApiMutation, useUpdateServiceProviderApiMutation} = serviceProviderApi
+export const { useGetServiceProvidersApiQuery, useGetServiceProviderApiQuery, useGetServiceProviderAllApiQuery, usePostServiceProviderStatusApiMutation, usePostServiceProviderApiMutation, useUpdateServiceProviderApiMutation} = serviceProviderApi

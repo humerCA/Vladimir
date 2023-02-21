@@ -138,8 +138,8 @@ const LandingPage = () => {
               type="text"
               size="small"
               color="secondary"
-              error={errors.username?.message}
-              helperText={errors.username?.message}
+              error={errors?.username?.message}
+              helperText={errors?.username?.message}
             />
 
             <CustomTextField
@@ -150,8 +150,8 @@ const LandingPage = () => {
               type="password"
               size="small"
               color="secondary"
-              error={errors.password?.message}
-              helperText={errors.password?.message}
+              error={errors?.password?.message}
+              helperText={errors?.password?.message}
             />
 
             <Button
