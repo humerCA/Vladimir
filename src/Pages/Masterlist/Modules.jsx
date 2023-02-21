@@ -28,6 +28,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
 
 const Modules = () => {
   const [search, setSearch] = useState("");
@@ -141,6 +142,9 @@ const Modules = () => {
       >
         Modules
       </Typography>
+
+      {isLoading && <MasterlistSkeleton />}
+      {modulesSuccess && <Error />}
 
       <Box className="mcontainer__wrapper">
         <MasterlistToolbar
