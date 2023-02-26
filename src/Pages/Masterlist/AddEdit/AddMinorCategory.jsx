@@ -42,7 +42,12 @@ const AddMinorCategory = (props) => {
 
   const [
     postMinorCategory,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      data: postData,
+      isError,
+    },
   ] = usePostMinorCategoryApiMutation();
 
   const [
@@ -152,7 +157,7 @@ const AddMinorCategory = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors?.minor_category_name?.message}
+          error={!!errors?.minor_category_name?.message}
           helperText={errors?.minor_category_name?.message}
           fullWidth
         />
@@ -176,7 +181,7 @@ const AddMinorCategory = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors?.urgency_level?.message}
+              error={!!errors?.urgency_level?.message}
               helperText={errors?.urgency_level?.message}
             />
           )}
@@ -235,10 +240,11 @@ const AddMinorCategory = (props) => {
         />
 
         <Box className="add-masterlist__buttons">
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="small"
+            loading={isUpdateLoading || isPostLoading}
             disabled={
               (errors?.minor_category_name ? true : false) ||
               watch("minor_category_name") === undefined ||
@@ -253,7 +259,7 @@ const AddMinorCategory = (props) => {
             }
           >
             {data.status ? "Update" : "Create"}
-          </Button>
+          </LoadingButton>
 
           <Button
             variant="outlined"

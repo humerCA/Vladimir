@@ -47,25 +47,6 @@ const MasterlistToolbar = (props) => {
             label="ARCHIVED"
           />
         </Box>
-
-        <TextField
-          autoComplete="off"
-          variant="outlined"
-          name="search"
-          label="🔍︎ Search"
-          // label="🔍 Search"
-          type="text"
-          size="small"
-          color="secondary"
-          sx={{
-            ".MuiInputBase-root": {
-              borderRadius: "15px",
-              border: ".5px",
-              background: "#f4f4f4",
-            },
-          }}
-          onKeyPress={searchHandler}
-        />
         <Box className="masterlist-toolbar__addBtn">
           {Boolean(onImport) && (
             <Button
@@ -92,6 +73,25 @@ const MasterlistToolbar = (props) => {
             Add
           </Button>
         </Box>
+
+        <TextField
+          autoComplete="off"
+          variant="outlined"
+          name="search"
+          label="🔍︎ Search"
+          // label="🔍 Search"
+          type="text"
+          size="small"
+          color="secondary"
+          sx={{
+            ".MuiInputBase-root": {
+              borderRadius: "15px",
+              border: ".5px",
+              background: "#f4f4f4",
+            },
+          }}
+          onKeyPress={searchHandler}
+        />
       </Box>
     </Box>
   );

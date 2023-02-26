@@ -14,6 +14,7 @@ import {
   useUpdateServiceProviderApiMutation,
 } from "../../../Redux/Query/ServiceProviderApi";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -26,16 +27,25 @@ const AddServiceProvider = (props) => {
 
   const [
     postServiceProvider,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      data: postData,
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      isError: isPostError,
+      error: postError,
+    },
   ] = usePostServiceProviderApiMutation();
+  console.log(isPostError);
+  console.log(postError);
 
   const [
     updateServiceProvider,
     {
+      data: updateData,
       isLoading: isUpdateLoading,
       isSuccess: isUpdateSuccess,
-      data: updateData,
       isError: isUpdateError,
+      errors: updateError,
     },
   ] = useUpdateServiceProviderApiMutation();
 
@@ -55,24 +65,44 @@ const AddServiceProvider = (props) => {
   });
 
   useEffect(() => {
-    if (isPostSuccess) {
+    if (
+      (isPostError || isUpdateError) &&
+      (postError?.status === 422 || updateError?.status === 422)
+    ) {
+      setError("service_provider_name", {
+        type: "validate",
+        message:
+          postError?.data?.errors.service_provider_name ||
+          updateError?.data?.errors.service_provider_name,
+      });
+    } else if (
+      (isPostError && postError?.status !== 422) ||
+      (isUpdateError && updateError?.status !== 422)
+    ) {
+      dispatch(
+        openToast({
+          message: "Something went wrong. Please try again.",
+          duration: 5000,
+          variant: "error",
+        })
+      );
+    }
+  }, [isPostError, isUpdateError]);
+
+  useEffect(() => {
+    if (isPostSuccess || isUpdateSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData.message,
+          message: postData?.message || updateData?.message,
           duration: 5000,
         })
       );
-    } else if (isUpdateSuccess) {
-      reset();
-      handleCloseDrawer();
-      dispatch(
-        openToast({
-          message: updateData.message,
-          duration: 5000,
-        })
-      );
+
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -85,14 +115,10 @@ const AddServiceProvider = (props) => {
 
   const onSubmitHandler = (formData) => {
     if (data.status) {
-      setTimeout(() => {
-        onUpdateResetHandler();
-      }, 500);
       updateServiceProvider(formData);
       return;
     }
     postServiceProvider(formData);
-    console.log(formData);
   };
 
   const handleCloseDrawer = () => {
@@ -125,15 +151,16 @@ const AddServiceProvider = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors?.service_provider_name?.message}
+          error={!!errors?.service_provider_name}
           helperText={errors?.service_provider_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="small"
+            loading={isUpdateLoading || isPostLoading}
             disabled={
               (errors?.service_provider_name ? true : false) ||
               watch("service_provider_name") === undefined ||
@@ -141,7 +168,7 @@ const AddServiceProvider = (props) => {
             }
           >
             {data.status ? "Update" : "Create"}
-          </Button>
+          </LoadingButton>
 
           <Button
             variant="outlined"

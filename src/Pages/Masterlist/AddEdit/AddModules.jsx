@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../../../Style/Masterlist/addMasterlist.scss";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
 
@@ -15,6 +15,7 @@ import {
   usePostModuleApiMutation,
   useUpdateModuleApiMutation,
 } from "../../../Redux/Query/ModulesApi";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -23,12 +24,21 @@ const schema = yup.object().shape({
 
 const AddModules = (props) => {
   const { data, onUpdateResetHandler } = props;
+
   const dispatch = useDispatch();
 
   const [
     postModule,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      data: postData,
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      isError: isPostError,
+      error: postError,
+    },
   ] = usePostModuleApiMutation();
+  console.log(isPostError);
+  console.log(postError);
 
   const [
     updateModule,
@@ -54,26 +64,39 @@ const AddModules = (props) => {
       module_name: "",
     },
   });
+  // console.log(errors);
 
   useEffect(() => {
-    if (isPostSuccess) {
+    if (isPostError && postError?.status === 409) {
+      setError("module_name", {
+        type: "validate",
+        message: postError?.data?.message,
+      });
+    } else if (isPostError && postError?.status !== 409) {
+      dispatch(
+        openToast({
+          message: "Something went wrong. Please try again.",
+          duration: 5000,
+          variant: "error",
+        })
+      );
+    }
+  }, [isPostError]);
+
+  useEffect(() => {
+    if (isPostSuccess || isUpdateSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData.message,
+          message: postData?.message || updateData?.message,
           duration: 5000,
         })
       );
-    } else if (isUpdateSuccess) {
-      reset();
-      handleCloseDrawer();
-      dispatch(
-        openToast({
-          message: updateData.message,
-          duration: 5000,
-        })
-      );
+
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -86,13 +109,7 @@ const AddModules = (props) => {
 
   const onSubmitHandler = (formData) => {
     if (data.status) {
-      setTimeout(() => {
-        onUpdateResetHandler();
-      }, 500);
-      updateModule(formData);
-
-      console.log(formData);
-      return;
+      return updateModule(formData);
     }
     postModule(formData);
   };
@@ -118,6 +135,7 @@ const AddModules = (props) => {
         component="form"
         onSubmit={handleSubmit(onSubmitHandler)}
         className="add-masterlist__content"
+        autoComplete="off"
       >
         <CustomTextField
           required
@@ -127,15 +145,16 @@ const AddModules = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors?.module_name?.message}
+          error={!!errors?.module_name}
           helperText={errors?.module_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="small"
+            loading={isUpdateLoading || isPostLoading}
             disabled={
               (errors?.module_name ? true : false) ||
               watch("module_name") === undefined ||
@@ -143,7 +162,7 @@ const AddModules = (props) => {
             }
           >
             {data.status ? "Update" : "Create"}
-          </Button>
+          </LoadingButton>
 
           <Button
             variant="outlined"

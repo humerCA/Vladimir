@@ -1,47 +1,63 @@
-import { Box, Skeleton } from "@mui/material";
 import React from "react";
+import { Box, Skeleton } from "@mui/material";
 
-const MasterlistSkeleton = () => {
+const MasterlistSkeleton = (props) => {
+  const { onImport } = props;
+
   return (
-    <Box>
-      <Box className="toolbar" sx={{ marginTop: "10px" }}>
-        <Box
-          className="toolbar__button-wrapper"
-          sx={{ display: "flex", gap: "20px" }}
-        >
-          <Skeleton variant={"rounded"} width={80} height={40} />
-          <Skeleton variant={"rounded"} width={100} height={40} />
-        </Box>
-
-        <Box className="toolbar__textbox-wrapper">
-          <Skeleton variant={"rounded"} width={120} height={40} />
-        </Box>
+    <>
+      <Box
+        sx={{
+          position: "absolute",
+          display: "flex",
+          right: 15,
+          gap: "10px",
+          top: 30,
+        }}
+      >
+        {Boolean(onImport) && (
+          <Skeleton variant={"rounded"} width="100px" height="33px" />
+        )}
+        <Skeleton variant={"rounded"} width="70px" height="33px" />
       </Box>
 
-      <Box sx={{ marginBottom: "10px" }}>
-        <Skeleton
-          variant={"rounded"}
-          height={50}
-          sx={{ marginBottom: "10px" }}
-        />
-        <Skeleton variant={"rounded"} height={300} />
-      </Box>
-
-      <Box>
+      <Box className="mcontainer__wrapper">
         <Box
-          className="toolbar__textbox-wrapper"
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            marginBottom: "20px",
+            alignItems: "center",
+            padding: "10px 20px",
+            gap: "20px",
           }}
         >
-          <Skeleton variant={"rounded"} width={100} height={30} />
+          <Skeleton variant={"rounded"} width="120px" height="40px" />
+          <Skeleton variant={"rounded"} width="220px" height="40px" />
+        </Box>
 
-          <Skeleton variant={"rounded"} width={360} height={30} />
+        <Box sx={{ padding: "5px 20px" }}>
+          <Skeleton
+            variant={"rounded"}
+            height="40px"
+            sx={{ marginBottom: "10px" }}
+          />
+          <Skeleton variant={"rounded"} height="46.5vh" />
+        </Box>
+
+        <Box sx={{ padding: "5px 20px 10px" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Skeleton variant={"rounded"} width="100px" height="35px" />
+
+            <Skeleton variant={"rounded"} width="300px" height="35px" />
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

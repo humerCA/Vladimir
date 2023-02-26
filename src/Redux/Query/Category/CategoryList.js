@@ -10,6 +10,8 @@ export const categoryListApi = createApi({
             const token = localStorage.getItem("token");
 
             headers.set('Authorization', `Bearer ${token}`);
+            headers.set('Accept', `application/json`)
+
             return headers
         }
      }),

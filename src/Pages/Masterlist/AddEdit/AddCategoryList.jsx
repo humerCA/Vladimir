@@ -18,12 +18,13 @@ import { useGetServiceProviderAllApiQuery } from "../../../Redux/Query/ServicePr
 import { useGetMajorCategoryAllApiQuery } from "../../../Redux/Query/Category/MajorCategory";
 import { useGetMinorCategoryAllApiQuery } from "../../../Redux/Query/Category/MinorCategory";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   id: yup.string().nullable(),
-  service_provider_id: yup.object(),
-  major_category_id: yup.object(),
-  minor_category_id: yup.array(),
+  service_provider_id: yup.object().required(),
+  major_category_id: yup.object().required(),
+  minor_category_id: yup.array().required(),
 });
 
 const AddCategoryList = (props) => {
@@ -32,7 +33,13 @@ const AddCategoryList = (props) => {
 
   const [
     postCategoryList,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      data: postData,
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      isError: isPostError,
+      error: postError,
+    },
   ] = usePostCategoryListApiMutation();
 
   const [
@@ -42,6 +49,7 @@ const AddCategoryList = (props) => {
       isSuccess: isUpdateSuccess,
       data: updateData,
       isError: isUpdateError,
+      error: updateError,
     },
   ] = useUpdateCategoryListApiMutation();
 
@@ -50,7 +58,7 @@ const AddCategoryList = (props) => {
     isLoading: isServiceProviderLoading,
     isError: isServiceProviderError,
   } = useGetServiceProviderAllApiQuery();
-  console.log(serviceProviderData);
+  // console.log(serviceProviderData);
 
   const {
     data: majorCategoryData = [],
@@ -83,24 +91,50 @@ const AddCategoryList = (props) => {
   });
 
   useEffect(() => {
-    if (isPostSuccess) {
+    if (
+      (isPostError || isUpdateError) &&
+      (postError?.status === 422 || updateError?.status === 422)
+    ) {
+      setError("service_provider_id", {
+        type: "validate",
+        message:
+          postError?.data?.errors.categorylist ||
+          updateError?.data?.errors.categorylist,
+      }) ||
+        setError("major_category_id", {
+          type: "validate",
+          message:
+            postError?.data?.errors.categorylist ||
+            updateError?.data?.errors.categorylist,
+        });
+    } else if (
+      (isPostError && postError?.status !== 422) ||
+      (isUpdateError && updateError?.status !== 422)
+    ) {
+      dispatch(
+        openToast({
+          message: "Something went wrong. Please try again.",
+          duration: 5000,
+          variant: "error",
+        })
+      );
+    }
+  }, [isPostError, isUpdateError]);
+
+  useEffect(() => {
+    if (isPostSuccess || isUpdateSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData.message,
+          message: postData?.message || updateData?.message,
           duration: 5000,
         })
       );
-    } else if (isUpdateSuccess) {
-      reset();
-      handleCloseDrawer();
-      dispatch(
-        openToast({
-          message: updateData.message,
-          duration: 5000,
-        })
-      );
+
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -125,15 +159,10 @@ const AddCategoryList = (props) => {
     };
 
     if (data.status) {
-      setTimeout(() => {
-        onUpdateResetHandler();
-      }, 500);
-      updateCategoryList(newFormData);
-      return;
+      return updateCategoryList(newFormData);
     }
 
     postCategoryList(newFormData);
-    console.log(newFormData);
   };
 
   const handleCloseDrawer = () => {
@@ -150,7 +179,11 @@ const AddCategoryList = (props) => {
         color="secondary.main"
         sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
       >
-        {data.status ? "Edit Category" : "Add Category"}
+        {!data.status
+          ? "Add Category"
+          : data.action === "addMinor"
+          ? "Add Minor Category"
+          : "Update Category"}
       </Typography>
 
       <Box
@@ -162,6 +195,7 @@ const AddCategoryList = (props) => {
           required
           includeInputInList
           name="service_provider_id"
+          disabled={data.action === "addMinor"}
           control={control}
           options={serviceProviderData}
           loading={isServiceProviderLoading}
@@ -182,8 +216,8 @@ const AddCategoryList = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors?.service_provider_name?.message}
-              helperText={errors?.service_provider_name?.message}
+              error={!!errors?.service_provider_id?.message}
+              helperText={errors?.service_provider_id?.message}
             />
           )}
         />
@@ -191,6 +225,7 @@ const AddCategoryList = (props) => {
         <CustomAutoComplete
           autoComplete
           name="major_category_id"
+          disabled={data.action === "addMinor"}
           control={control}
           options={majorCategoryData}
           loading={isMajorCategoryLoading}
@@ -211,8 +246,8 @@ const AddCategoryList = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors?.major_category_name?.message}
-              helperText={errors?.major_category_name?.message}
+              error={!!errors?.major_category_id?.message}
+              helperText={errors?.major_category_id?.message}
             />
           )}
         />
@@ -220,7 +255,7 @@ const AddCategoryList = (props) => {
         <CustomAutoComplete
           autoComplete
           name="minor_category_id"
-          disabled={!!data.status}
+          disabled={data.action === "updateCategory"}
           control={control}
           options={minorCategoryData}
           size="small"
@@ -240,18 +275,19 @@ const AddCategoryList = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors?.minor_category_name?.message}
-              helperText={errors?.minor_category_name?.message}
+              error={!!errors?.minor_category_id?.message}
+              helperText={errors?.minor_category_id?.message}
             />
           )}
           multiple
         />
 
         <Box className="add-masterlist__buttons">
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="small"
+            loading={isUpdateLoading || isPostLoading}
             disabled={
               (errors?.service_provider_id ? true : false) ||
               watch("service_provider_id") === null ||
@@ -261,8 +297,12 @@ const AddCategoryList = (props) => {
               watch("minor_category_id").length === 0
             }
           >
-            {data.status ? "Update" : "Create"}
-          </Button>
+            {!data.status
+              ? "Create"
+              : data.action === "addMinor"
+              ? "Add"
+              : "Update"}
+          </LoadingButton>
 
           <Button
             variant="outlined"

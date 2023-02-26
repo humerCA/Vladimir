@@ -19,7 +19,13 @@ import { useSelector, useDispatch } from "react-redux";
 // MUI
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Dialog, Snackbar, SwipeableDrawer } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Dialog,
+  Snackbar,
+  SwipeableDrawer,
+} from "@mui/material";
 import RoleManagement from "./Pages/RoleManagement";
 
 const router = createBrowserRouter([
@@ -182,6 +188,7 @@ const theme = createTheme({
 function App() {
   const {
     open: toastOpen,
+    variant: toastVariant,
     message: toastMessage,
     duration: toastDuration,
   } = useSelector((state) => state.toast);
@@ -210,12 +217,20 @@ function App() {
         open={toastOpen}
         autoHideDuration={toastDuration}
         onClose={handleClose}
-        message={toastMessage}
+        // message={toastMessage}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
         }}
-      />
+      >
+        <Alert onClose={handleClose} severity={toastVariant}>
+          <AlertTitle sx={{ textTransform: "capitalize", fontWeight: "bold" }}>
+            {toastVariant}!
+          </AlertTitle>
+
+          {toastMessage}
+        </Alert>
+      </Snackbar>
 
       <Dialog
         open={confirmOpen}

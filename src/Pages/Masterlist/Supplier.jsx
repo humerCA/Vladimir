@@ -32,6 +32,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
+import ErrorFetching from "../ErrorFetching";
 
 const Supplier = () => {
   const [search, setSearch] = useState("");
@@ -62,6 +64,7 @@ const Supplier = () => {
     isLoading: supplierLoading,
     isSuccess: supplierSuccess,
     isError: supplierError,
+    refetch,
   } = useGetSupplierApiQuery(
     {
       page: page,
@@ -153,146 +156,156 @@ const Supplier = () => {
         Suppliers
       </Typography>
 
-      <Box className="mcontainer__wrapper">
-        <MasterlistToolbar
-          path="#"
-          onStatusChange={setStatus}
-          onSearchChange={setSearch}
-          onSetPage={setPage}
-        />
+      {supplierLoading && <MasterlistSkeleton />}
 
-        <Box>
-          <TableContainer>
-            <Table className="mcontainer__table" stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Id
-                  </TableCell>
+      {supplierError && <ErrorFetching refetch={refetch} />}
 
-                  <TableCell className="mcontainer__th-cell">
-                    Service Provider
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell">Address</TableCell>
-
-                  <TableCell className="mcontainer__th-cell">
-                    Contact Number
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Status
-                  </TableCell>
-
-                  <TableCell
-                    className="mcontainer__th-cell mcontainer__text-center"
-                    sx={{ whiteSpace: "nowrap" }}
-                  >
-                    Date Created
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {supplierSuccess &&
-                  supplierData.data.map((data) => (
-                    <TableRow
-                      key={data.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": {
-                          borderBottom: 0,
-                        },
-                      }}
-                    >
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {data.id}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell">
-                        {data.supplier_name}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell">
-                        {data.address}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell">
-                        {data.contact_no}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {data.is_active ? (
-                          <Typography
-                            color="success.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#26f57c2a",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            ACTIVE
-                          </Typography>
-                        ) : (
-                          <Typography
-                            align="center"
-                            color="errorColor.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#fc3e3e34",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            INACTIVE
-                          </Typography>
-                        )}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {Moment(data.created_at).format("MMM DD, YYYY")}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                        <ActionMenu
-                          status={status}
-                          data={data}
-                          onUpdateHandler={onUpdateHandler}
-                          onArchiveRestoreHandler={onArchiveRestoreHandler}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-
-        <Box className="mcontainer__pagination">
-          <TablePagination
-            rowsPerPageOptions={[
-              5,
-              10,
-              15,
-              { label: "All", value: parseInt(supplierData?.total) },
-            ]}
-            component="div"
-            count={supplierSuccess ? supplierData.total : 0}
-            page={supplierSuccess ? supplierData.current_page - 1 : 0}
-            rowsPerPage={supplierSuccess ? parseInt(supplierData?.per_page) : 5}
-            onPageChange={pageHandler}
-            onRowsPerPageChange={limitHandler}
+      {supplierSuccess && (
+        <Box className="mcontainer__wrapper">
+          <MasterlistToolbar
+            path="#"
+            onStatusChange={setStatus}
+            onSearchChange={setSearch}
+            onSetPage={setPage}
           />
+
+          <Box>
+            <TableContainer className="mcontainer__th-body">
+              <Table className="mcontainer__table" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Id
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell">
+                      Service Provider
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell">
+                      Address
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell">
+                      Contact Number
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Status
+                    </TableCell>
+
+                    <TableCell
+                      className="mcontainer__th-cell mcontainer__text-center"
+                      sx={{ whiteSpace: "nowrap" }}
+                    >
+                      Date Created
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Action
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {supplierSuccess &&
+                    supplierData.data.map((data) => (
+                      <TableRow
+                        key={data.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            borderBottom: 0,
+                          },
+                        }}
+                      >
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.id}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell">
+                          {data.supplier_name}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell">
+                          {data.address}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell">
+                          {data.contact_no}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.is_active ? (
+                            <Typography
+                              color="success.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#26f57c2a",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              ACTIVE
+                            </Typography>
+                          ) : (
+                            <Typography
+                              align="center"
+                              color="errorColor.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#fc3e3e34",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              INACTIVE
+                            </Typography>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {Moment(data.created_at).format("MMM DD, YYYY")}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                          <ActionMenu
+                            status={status}
+                            data={data}
+                            onUpdateHandler={onUpdateHandler}
+                            onArchiveRestoreHandler={onArchiveRestoreHandler}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          <Box className="mcontainer__pagination">
+            <TablePagination
+              rowsPerPageOptions={[
+                5,
+                10,
+                15,
+                { label: "All", value: parseInt(supplierData?.total) },
+              ]}
+              component="div"
+              count={supplierSuccess ? supplierData.total : 0}
+              page={supplierSuccess ? supplierData.current_page - 1 : 0}
+              rowsPerPage={
+                supplierSuccess ? parseInt(supplierData?.per_page) : 5
+              }
+              onPageChange={pageHandler}
+              onRowsPerPageChange={limitHandler}
+            />
+          </Box>
         </Box>
-      </Box>
+      )}
 
       <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
         <AddSupplier

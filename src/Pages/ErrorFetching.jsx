@@ -1,6 +1,6 @@
 import React from "react";
+import "../Style/errorFetching.scss";
 import { Box, Button, Typography } from "@mui/material";
-import "../assets/errorFetching.style.scss";
 
 const ErrorFetching = (props) => {
   const { refetch } = props;
@@ -12,8 +12,11 @@ const ErrorFetching = (props) => {
   return (
     <Box className="errorFetching">
       <Box className="errorFetching__wrapper">
-        <Typography sx={{ fontSize: "2rem", fontWeight: "bold" }}>
-          Something went Wrong!
+        <Typography
+          className="errorFetching__typo"
+          sx={{ fontSize: "2rem", fontWeight: "bold" }}
+        >
+          Something went wrong!
         </Typography>
         <Button variant="contained" onClick={refetch}>
           Try Again

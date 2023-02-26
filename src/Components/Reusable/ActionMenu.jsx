@@ -20,6 +20,7 @@ import {
   MoveToInbox,
   RestartAlt,
   Reply,
+  AddCircleOutline,
 } from "@mui/icons-material";
 
 const ActionMenu = (props) => {
@@ -32,6 +33,7 @@ const ActionMenu = (props) => {
     onResetHandler,
     onUpdateHandler,
     status,
+    onAddMinorCategoryHandler,
   } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -56,6 +58,12 @@ const ActionMenu = (props) => {
 
   const handleEdit = () => {
     onUpdateHandler(data);
+    dispatch(openDrawer());
+    handleClose();
+  };
+
+  const handleAddMinorCategory = () => {
+    onAddMinorCategoryHandler(data);
     dispatch(openDrawer());
     handleClose();
   };
@@ -90,6 +98,7 @@ const ActionMenu = (props) => {
             </ListItemText>
           </MenuItem>
         )}
+
         <MenuItem onClick={handleArchiveRestore} dense>
           <ListItemIcon>
             {status === "active" ? <MoveToInbox /> : <Reply />}
@@ -106,6 +115,17 @@ const ActionMenu = (props) => {
             </ListItemIcon>
             <ListItemText disableTypography align="left">
               Reset
+            </ListItemText>
+          </MenuItem>
+        )}
+
+        {status === "active" && onAddMinorCategoryHandler !== undefined && (
+          <MenuItem onClick={handleAddMinorCategory} dense>
+            <ListItemIcon>
+              <AddCircleOutline />
+            </ListItemIcon>
+            <ListItemText disableTypography align="left">
+              {`Add Minor`} <br /> {`Category`}
             </ListItemText>
           </MenuItem>
         )}

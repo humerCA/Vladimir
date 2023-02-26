@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Box, Button, InputAdornment, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,7 @@ import {
   useUpdateSupplierApiMutation,
 } from "../../../Redux/Query/SupplierApi";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -32,8 +33,16 @@ const AddSupplier = (props) => {
 
   const [
     postSupplier,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      data: postData,
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      isError: isPostError,
+      error: postError,
+    },
   ] = usePostSupplierApiMutation();
+  console.log(isPostError);
+  console.log(postError);
 
   const [
     updateSupplier,
@@ -42,8 +51,12 @@ const AddSupplier = (props) => {
       isSuccess: isUpdateSuccess,
       data: updateData,
       isError: isUpdateError,
+      error: updateError,
     },
   ] = useUpdateSupplierApiMutation();
+
+  console.log(isUpdateError);
+  console.log(updateError);
 
   const {
     handleSubmit,
@@ -65,24 +78,50 @@ const AddSupplier = (props) => {
   // console.log(watch("contact_no"));
 
   useEffect(() => {
-    if (isPostSuccess) {
+    if (
+      (isPostError || isUpdateError) &&
+      (postError?.status === 422 || updateError?.status === 422)
+    ) {
+      setError("supplier_name", {
+        type: "validate",
+        message:
+          postError?.data?.errors.supplier_name ||
+          updateError?.data?.errors.supplier_name,
+      }) ||
+        setError("contact_no", {
+          type: "validate",
+          message:
+            postError?.data?.errors.contact_no ||
+            updateError?.data?.errors.contact_no,
+        });
+    } else if (
+      (isPostError && postError?.status !== 422) ||
+      (isUpdateError && updateError?.status !== 422)
+    ) {
+      dispatch(
+        openToast({
+          message: "Something went wrong. Please try again.",
+          duration: 5000,
+          variant: "error",
+        })
+      );
+    }
+  }, [isPostError, isUpdateError]);
+
+  useEffect(() => {
+    if (isPostSuccess || isUpdateSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData.message,
+          message: postData?.message || updateData?.message,
           duration: 5000,
         })
       );
-    } else if (isUpdateSuccess) {
-      reset();
-      handleCloseDrawer();
-      dispatch(
-        openToast({
-          message: updateData.message,
-          duration: 5000,
-        })
-      );
+
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -98,9 +137,6 @@ const AddSupplier = (props) => {
 
   const onSubmitHandler = (formData) => {
     if (data.status) {
-      setTimeout(() => {
-        onUpdateResetHandler();
-      }, 500);
       const newObj = { ...formData, contact_no: "09" + formData.contact_no };
       updateSupplier(newObj);
       console.log(data);
@@ -143,7 +179,7 @@ const AddSupplier = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors?.supplier_name?.message}
+          error={!!errors?.supplier_name?.message}
           helperText={errors?.supplier_name?.message}
           fullWidth
         />
@@ -155,7 +191,7 @@ const AddSupplier = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors?.address?.message}
+          error={!!errors?.address?.message}
           helperText={errors?.address?.message}
           fullWidth
         />
@@ -168,7 +204,7 @@ const AddSupplier = (props) => {
           color="secondary"
           type="text"
           size="small"
-          error={errors?.contact_no?.message}
+          error={!!errors?.contact_no?.message}
           helperText={errors?.contact_no?.message}
           format="(09##) - ### - ####"
           allowEmptyFormatting
@@ -177,10 +213,11 @@ const AddSupplier = (props) => {
         />
 
         <Box className="add-masterlist__buttons">
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="small"
+            loading={isUpdateLoading || isPostLoading}
             disabled={
               (errors?.supplier_name ? true : false) ||
               watch("supplier_name") === undefined ||
@@ -194,7 +231,7 @@ const AddSupplier = (props) => {
             }
           >
             {data.status ? "Update" : "Create"}
-          </Button>
+          </LoadingButton>
 
           <Button
             variant="outlined"

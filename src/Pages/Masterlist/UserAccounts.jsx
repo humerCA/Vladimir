@@ -34,6 +34,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, IosShareRounded, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
+import ErrorFetching from "../ErrorFetching";
 
 const UserAccounts = () => {
   const [search, setSearch] = useState("");
@@ -46,19 +48,8 @@ const UserAccounts = () => {
     employee_id: "",
     firstname: "",
     lastname: "",
-    department_id: "",
     username: "",
-    password: "",
-    access_permission: [
-      "Dashboard",
-      "Masterlist",
-      "Asset for Tagging",
-      "Asset List",
-      "Request",
-      "Onhand",
-      "Disposal",
-      "Reports",
-    ],
+    role_id: null,
   });
 
   const drawer = useSelector((state) => state.drawer);
@@ -77,6 +68,7 @@ const UserAccounts = () => {
     isLoading: usersLoading,
     isSuccess: usersSuccess,
     isError: usersError,
+    refetch,
   } = useGetUserAccountsApiQuery(
     {
       page: page,
@@ -87,7 +79,10 @@ const UserAccounts = () => {
     { refetchOnMountOrArgChange: true }
   );
 
-  const [postUserStatusApi, { isLoading }] = usePostUserStatusApiMutation();
+  const [postUserStatusApi, { isLoading: isPostUserLoading }] =
+    usePostUserStatusApiMutation();
+
+  const [resetUserApi] = useResetUserApiMutation();
 
   const dispatch = useDispatch();
 
@@ -134,24 +129,17 @@ const UserAccounts = () => {
   };
 
   const onUpdateHandler = (props) => {
-    const {
-      id,
-      employee_id,
-      first_name,
-      last_name,
-      department,
-      username,
-      access_permission,
-    } = props;
+    const { id, employee_id, firstname, lastname, username, role, role_id } =
+      props;
     setUpdateUser({
       status: true,
       id: id,
       employee_id: employee_id,
-      first_name: first_name,
-      last_name: last_name,
-      department: department,
+      firstname: firstname,
+      lastname: lastname,
       username: username,
-      access_permission: access_permission,
+      role: role,
+      role_id: role_id,
     });
   };
 
@@ -159,12 +147,11 @@ const UserAccounts = () => {
     setUpdateUser({
       status: false,
       id: null,
-      employee_id: "",
-      first_name: "",
-      last_name: "",
-      department: "",
+      employee_id: null,
+      firstname: "",
+      lastname: "",
       username: "",
-      access_permission: [],
+      role_id: null,
     });
   };
 
@@ -184,15 +171,16 @@ const UserAccounts = () => {
           </Box>
         ),
 
-        onConfirm: async (id) => {
+        onConfirm: async () => {
           try {
-            const result = await useResetUserApiMutation({
+            const result = await resetUserApi({
               id: id,
             }).unwrap();
+            console.log(result);
 
             dispatch(
               openToast({
-                message: result.data.message,
+                message: result.message,
                 duration: 5000,
               })
             );
@@ -226,181 +214,188 @@ const UserAccounts = () => {
         User Accounts
       </Typography>
 
-      <Box className="mcontainer__wrapper">
-        <MasterlistToolbar
-          path="#"
-          onStatusChange={setStatus}
-          onSearchChange={setSearch}
-          onSetPage={setPage}
-          onImport={() => {}}
-        />
+      {usersLoading && <MasterlistSkeleton onImport={true} />}
 
-        <Box>
-          <TableContainer className="mcontainer__th-body">
-            <Table className="mcontainer__table" stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Id
-                  </TableCell>
+      {usersError && <ErrorFetching refetch={refetch} />}
 
-                  <TableCell className="mcontainer__th-cell">
-                    Firstname
-                  </TableCell>
+      {usersSuccess && (
+        <Box className="mcontainer__wrapper">
+          <MasterlistToolbar
+            path="#"
+            onStatusChange={setStatus}
+            onSearchChange={setSearch}
+            onSetPage={setPage}
+            onImport={() => {}}
+          />
 
-                  <TableCell className="mcontainer__th-cell">
-                    Lastname
-                  </TableCell>
+          <Box>
+            <TableContainer className="mcontainer__th-body">
+              <Table className="mcontainer__table" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Id
+                    </TableCell>
 
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Role
-                  </TableCell>
+                    <TableCell className="mcontainer__th-cell">
+                      Firstname
+                    </TableCell>
 
-                  <TableCell className="mcontainer__th-cell">
-                    Username
-                  </TableCell>
+                    <TableCell className="mcontainer__th-cell">
+                      Lastname
+                    </TableCell>
 
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Status
-                  </TableCell>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Role
+                    </TableCell>
 
-                  <TableCell
-                    className="mcontainer__th-cell mcontainer__text-center"
-                    sx={{ whiteSpace: "nowrap" }}
-                  >
-                    Date Created
-                  </TableCell>
+                    <TableCell className="mcontainer__th-cell">
+                      Username
+                    </TableCell>
 
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Status
+                    </TableCell>
 
-              <TableBody>
-                {usersSuccess &&
-                  users.data.map((users) => (
-                    <TableRow
-                      key={users.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": {
-                          borderBottom: 0,
-                        },
-                      }}
+                    <TableCell
+                      className="mcontainer__th-cell mcontainer__text-center"
+                      sx={{ whiteSpace: "nowrap" }}
                     >
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {users.id}
-                      </TableCell>
+                      Date Created
+                    </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell">
-                        {users.firstname}
-                      </TableCell>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Action
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
 
-                      <TableCell className="mcontainer__tr-cell">
-                        {users.lastname}
-                      </TableCell>
+                <TableBody>
+                  {usersSuccess &&
+                    users.data.map((users) => (
+                      <TableRow
+                        key={users.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            borderBottom: 0,
+                          },
+                        }}
+                      >
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {users.id}
+                        </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {users.role.role_name.toUpperCase()}
-                      </TableCell>
+                        <TableCell className="mcontainer__tr-cell">
+                          {users.firstname}
+                        </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell">
-                        {users.username}
-                      </TableCell>
+                        <TableCell className="mcontainer__tr-cell">
+                          {users.lastname}
+                        </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {users.is_active ? (
-                          <Typography
-                            color="success.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#26f57c2a",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            ACTIVE
-                          </Typography>
-                        ) : (
-                          <Typography
-                            align="center"
-                            color="errorColor.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#fc3e3e34",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            INACTIVE
-                          </Typography>
-                        )}
-                      </TableCell>
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {users.role.role_name.toUpperCase()}
+                        </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {Moment(users.created_at).format("MMM DD, YYYY")}
-                      </TableCell>
+                        <TableCell className="mcontainer__tr-cell">
+                          {users.username}
+                        </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                        <ActionMenu
-                          status={status}
-                          data={users}
-                          onArchiveRestoreHandler={onArchiveRestoreHandler}
-                          onResetHandler={onResetHandler}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {users.is_active ? (
+                            <Typography
+                              color="success.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#26f57c2a",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              ACTIVE
+                            </Typography>
+                          ) : (
+                            <Typography
+                              align="center"
+                              color="errorColor.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#fc3e3e34",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              INACTIVE
+                            </Typography>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {Moment(users.created_at).format("MMM DD, YYYY")}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                          <ActionMenu
+                            status={status}
+                            data={users}
+                            onArchiveRestoreHandler={onArchiveRestoreHandler}
+                            onUpdateHandler={onUpdateHandler}
+                            onResetHandler={onResetHandler}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          <Box className="mcontainer__pagination-export">
+            <Button
+              variant="outlined"
+              size="small"
+              color="text"
+              startIcon={<IosShareRounded color="primary" />}
+              onClick={handleExport}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "10px 20px",
+              }}
+            >
+              EXPORT
+            </Button>
+
+            <TablePagination
+              rowsPerPageOptions={[
+                5,
+                10,
+                15,
+                { label: "All", value: parseInt(usersSuccess?.total) },
+              ]}
+              component="div"
+              count={usersSuccess ? users.total : 0}
+              page={usersSuccess ? users.current_page - 1 : 0}
+              rowsPerPage={usersSuccess ? parseInt(users?.per_page) : 5}
+              onPageChange={pageHandler}
+              onRowsPerPageChange={limitHandler}
+              sx={{ flexWrap: "wrap" }}
+            />
+          </Box>
+
+          <Drawer anchor="right" open={drawer} onClose={() => {}}>
+            <AddUserAccounts
+              data={updateUser}
+              onUpdateResetHandler={onUpdateResetHandler}
+            />
+          </Drawer>
         </Box>
-
-        <Box className="mcontainer__pagination-export">
-          <Button
-            variant="outlined"
-            size="small"
-            color="text"
-            startIcon={<IosShareRounded color="primary" />}
-            onClick={handleExport}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "10px 20px",
-            }}
-          >
-            EXPORT
-          </Button>
-
-          <TablePagination
-            rowsPerPageOptions={[
-              5,
-              10,
-              15,
-              { label: "All", value: parseInt(usersSuccess?.total) },
-            ]}
-            component="div"
-            count={usersSuccess ? users.total : 0}
-            page={usersSuccess ? users.current_page - 1 : 0}
-            rowsPerPage={usersSuccess ? parseInt(users?.per_page) : 5}
-            onPageChange={pageHandler}
-            onRowsPerPageChange={limitHandler}
-            sx={{ flexWrap: "wrap" }}
-          />
-        </Box>
-
-        <Drawer anchor="right" open={drawer} onClose={() => {}}>
-          <AddUserAccounts
-            data={updateUser}
-            onUpdateResetHandler={onUpdateResetHandler}
-          />
-        </Drawer>
-      </Box>
+      )}
     </Box>
   );
 };

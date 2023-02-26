@@ -10,6 +10,8 @@ export const sedarUsersApi = createApi({
             const token = process.env.SEDAR_KEY
 
             headers.set('Authorization', `Bearer ${token}`)
+            headers.set('Accept', `application/json`)
+
             return headers
         }
     }),

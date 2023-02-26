@@ -17,7 +17,13 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 
 const CustomTableCollapse = (props) => {
-  const { data, status, onUpdateHandler, onArchiveRestoreHandler } = props;
+  const {
+    data,
+    status,
+    onUpdateHandler,
+    onArchiveRestoreHandler,
+    onAddMinorCategoryHandler,
+  } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -80,12 +86,16 @@ const CustomTableCollapse = (props) => {
             data={data}
             onUpdateHandler={onUpdateHandler}
             onArchiveRestoreHandler={onArchiveRestoreHandler}
+            onAddMinorCategoryHandler={onAddMinorCategoryHandler}
           />
         </TableCell>
       </TableRow>
 
       <TableRow sx={{ background: "#eeeeee" }}>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell
+          sx={{ paddingBottom: 0, paddingTop: 0, border: 0 }}
+          colSpan={6}
+        >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="p" gutterBottom sx={{ fontWeight: "bold" }}>

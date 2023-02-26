@@ -27,20 +27,23 @@ import {
   useUpdateUserApiMutation,
 } from "../../../Redux/Query/UserAccountsApi";
 import { useGetSedarUsersApiQuery } from "../../../Redux/Query/SedarUserApi";
+import { useGetRoleAllApiQuery } from "../../../Redux/Query/RoleManagementApi";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
+  id: yup.string().nullable(),
   employee_id: yup.string().required(),
   sedar_employee: yup
     .object()
     .typeError("Employee ID is a required field")
     .required(),
-  first_name: yup.string().required(),
-  last_name: yup.string().required(),
-  department: yup.string().required(),
-  position: yup.string().required(),
+  firstname: yup.string().required(),
+  lastname: yup.string().required(),
+  // department: yup.string().required(),
+  // position: yup.string().required(),
   username: yup.string().required().label("Username"),
-  user_permission: yup.string().required().label("User permission"),
+  role_id: yup.object().required().label("User permission"),
 });
 
 const AddUserAccount = (props) => {
@@ -49,15 +52,21 @@ const AddUserAccount = (props) => {
 
   const [
     postUser,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      data: postData,
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      isError: isPostError,
+      error: postError,
+    },
   ] = usePostUserApiMutation();
 
   const [
     updateUser,
     {
+      data: updateData,
       isLoading: isUpdateLoading,
       isSuccess: isUpdateSuccess,
-      data: updateData,
       isError: isUpdateError,
     },
   ] = useUpdateUserApiMutation();
@@ -65,9 +74,17 @@ const AddUserAccount = (props) => {
   const {
     data: sedarData = [],
     isLoading: isSedarLoading,
+    isSuccess: isSedarSuccess,
     isError: isSedarError,
   } = useGetSedarUsersApiQuery();
-  console.log(sedarData);
+  // console.log(sedarData);
+
+  const {
+    data: roleData = [],
+    isLoading: isRoleLoading,
+    isError: isRoleError,
+  } = useGetRoleAllApiQuery();
+  // console.log(roleData);
 
   const {
     handleSubmit,
@@ -80,66 +97,91 @@ const AddUserAccount = (props) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      id: "",
       sedar_employee: null,
-      employee_id: "",
-      first_name: "",
-      last_name: "",
-      department: "",
-      position: "",
+      employee_id: null,
+      firstname: "",
+      lastname: "",
+      // department: "",
+      // position: "",
       username: "",
-      role_id: 1,
-      user_permission: "",
+      role_id: null,
     },
   });
 
   useEffect(() => {
-    if (isPostSuccess) {
+    if (isPostError && postError?.status === 422) {
+      setError("sedar_employee", {
+        type: "validate",
+        message: postError?.data?.errors.employee_id,
+      });
+    } else if (isPostError && postError?.status !== 422) {
+      dispatch(
+        openToast({
+          message: "Something went wrong. Please try again.",
+          duration: 5000,
+          variant: "error",
+        })
+      );
+    }
+  }, [isPostError]);
+
+  useEffect(() => {
+    if (isPostSuccess || isUpdateSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData.message,
+          message: postData?.message || updateData?.message,
           duration: 5000,
         })
       );
-    } else if (isUpdateSuccess) {
-      reset();
-      handleCloseDrawer();
-      dispatch(
-        openToast({
-          message: updateData.message,
-          duration: 5000,
-        })
-      );
+
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
   useEffect(() => {
     if (data.status) {
+      setValue("id", data.id);
       setValue("employee_id", data.employee_id);
-      setValue("first_name", data.first_name);
-      setValue("last_name", data.last_name);
-      setValue("department", data.department);
-      setValue("position", data.position);
+      setValue("sedar_employee", {
+        general_info: {
+          full_id_number: data.employee_id,
+        },
+      });
+      setValue("firstname", data.firstname);
+      setValue("lastname", data.lastname);
+      // setValue("department", data.department);
+      // setValue("position", data.position);
       setValue("username", data.username);
-      setValue("role_id", data.role_id);
-      setValue("user_permission", data.user_permission);
+      setValue("role_id", data.role);
     }
+    // console.log(data);
   }, [data]);
+  console.log(watch("employee_id"));
 
   const onSubmitHandler = (formData) => {
-    if (data.status) {
-      setTimeout(() => {
-        onUpdateResetHandler();
-      }, 500);
-      updateUser(formData);
-      return;
-    }
-    const obj = {
-      ...formData,
-      password: formData.username,
+    const newFormData = {
+      id: formData.id,
+      employee_id: formData.employee_id,
+      firstname: formData.firstname,
+      lastname: formData.lastname,
+      username: formData.username,
+      role_id: formData.role_id?.id,
     };
-    postModule(obj);
+
+    if (data.status) {
+      return updateUser(newFormData);
+    }
+
+    const obj = {
+      ...newFormData,
+      password: newFormData.username,
+    };
+    postUser(obj);
   };
 
   const handleCloseDrawer = () => {
@@ -187,10 +229,14 @@ const AddUserAccount = (props) => {
           </Typography>
 
           <CustomAutoComplete
-            required
-            includeInputInList
             name="sedar_employee"
             control={control}
+            size="small"
+            disabled={!!data.status}
+            required
+            includeInputInList
+            disablePortal
+            filterOptions={filterOptions}
             options={sedarData}
             loading={isSedarLoading}
             getOptionLabel={(option) => option.general_info?.full_id_number}
@@ -198,13 +244,12 @@ const AddUserAccount = (props) => {
               option.general_info?.full_id_number ===
               value.general_info?.full_id_number
             }
-            size="small"
             onChange={(_, value) => {
-              setValue("employee_id", value.general_info.full_id_number);
-              setValue("first_name", value.general_info.first_name);
-              setValue("last_name", value.general_info.last_name);
-              setValue("department", value.unit_info.department_name);
-              setValue("position", value.position_info.position_name);
+              setValue("employee_id", value.general_info?.full_id_number);
+              setValue("firstname", value.general_info?.first_name);
+              setValue("lastname", value.general_info?.last_name);
+              // setValue("department", value.unit_info.department_name);
+              // setValue("position", value.position_info.position_name);
               return value;
             }}
             renderInput={(params) => (
@@ -222,17 +267,15 @@ const AddUserAccount = (props) => {
                   },
                 }}
                 color="secondary"
-                error={errors?.sedar_employee?.message}
+                error={!!errors?.sedar_employee?.message}
                 helperText={errors?.sedar_employee?.message}
               />
             )}
-            disablePortal
-            filterOptions={filterOptions}
           />
 
           <CustomTextField
             control={control}
-            name="first_name"
+            name="firstname"
             label="Firstname"
             type="text"
             color="secondary"
@@ -243,7 +286,7 @@ const AddUserAccount = (props) => {
 
           <CustomTextField
             control={control}
-            name="last_name"
+            name="lastname"
             label="Last Name"
             type="text"
             color="secondary"
@@ -252,7 +295,7 @@ const AddUserAccount = (props) => {
             disabled
           />
 
-          <CustomTextField
+          {/* <CustomTextField
             control={control}
             name="department"
             label="Department"
@@ -272,7 +315,7 @@ const AddUserAccount = (props) => {
             size="small"
             fullWidth
             disabled
-          />
+          /> */}
 
           <Divider sx={{ py: 0.5 }} />
 
@@ -294,41 +337,51 @@ const AddUserAccount = (props) => {
             type="text"
             color="secondary"
             size="small"
-            error={errors?.username?.message}
+            error={!!errors?.username?.message}
             helperText={errors?.username?.message}
             fullWidth
           />
 
           <CustomAutoComplete
             autoComplete
-            name="user_permission"
+            name="role_id"
             control={control}
-            options={["Fixed Asset", "Warehouse", "H&M"]}
+            options={roleData}
+            loading={isRoleLoading}
             size="small"
+            getOptionLabel={(option) => option.role_name}
+            isOptionEqualToValue={(option, value) =>
+              option.role_name === value.role_name
+            }
             renderInput={(params) => (
               <TextField
                 color="secondary"
                 {...params}
                 label={
                   <>
-                    User Peremission <span style={{ color: "red" }}>*</span>
+                    User Permission <span style={{ color: "red" }}>*</span>
                   </>
                 }
                 sx={{
                   backgroundColor: "white",
                   ".MuiInputBase-root": { borderRadius: "12px" },
                 }}
-                error={errors?.user_permission?.message}
-                helperText={errors?.user_permission?.message}
+                error={!!errors?.role_id?.message}
+                helperText={errors?.role_id?.message}
               />
             )}
             disablePortal
           />
 
           <Box className="add-userAccount__buttons">
-            <Button size="small" type="submit" variant="contained">
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              size="small"
+              loading={isUpdateLoading || isPostLoading}
+            >
               {data.status ? "Update" : "Create"}
-            </Button>
+            </LoadingButton>
 
             <Button
               size="small"

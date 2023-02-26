@@ -30,6 +30,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
+import ErrorFetching from "../ErrorFetching";
 
 const MinorCategory = () => {
   const [search, setSearch] = useState("");
@@ -58,6 +60,7 @@ const MinorCategory = () => {
     isLoading: minorCategoryLoading,
     isSuccess: minorCategorySuccess,
     isError: minorCategoryError,
+    refetch,
   } = useGetMinorCategoryApiQuery(
     {
       page: page,
@@ -149,176 +152,186 @@ const MinorCategory = () => {
   };
 
   return (
-    <Box className="mcontainer__wrapper">
-      <MasterlistToolbar
-        path="#"
-        onStatusChange={setStatus}
-        onSearchChange={setSearch}
-        onSetPage={setPage}
-      />
+    <>
+      {minorCategoryLoading && <MasterlistSkeleton />}
 
-      <Box>
-        <TableContainer className="mcontainer__th-body-category">
-          <Table className="mcontainer__table" stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Id
-                </TableCell>
+      {minorCategoryError && <ErrorFetching refetch={refetch} />}
 
-                <TableCell
-                  className="mcontainer__th-cell"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Minor Category
-                </TableCell>
+      {minorCategoryData && (
+        <Box className="mcontainer__wrapper">
+          <MasterlistToolbar
+            path="#"
+            onStatusChange={setStatus}
+            onSearchChange={setSearch}
+            onSetPage={setPage}
+          />
 
-                <TableCell
-                  className="mcontainer__th-cell mcontainer__text-center"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Urgency Level
-                </TableCell>
-
-                <TableCell className="mcontainer__th-cell mcontainer__text-center mcontainer__text-font">
-                  Personally Assigned
-                </TableCell>
-
-                <TableCell className="mcontainer__th-cell mcontainer__text-center mcontainer__text-font">
-                  Evaluated in Every Movement
-                </TableCell>
-
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Status
-                </TableCell>
-
-                <TableCell
-                  className="mcontainer__th-cell mcontainer__text-center"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Date Created
-                </TableCell>
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {minorCategorySuccess &&
-                minorCategoryData.data.map((data) => (
-                  <TableRow
-                    key={data.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": {
-                        borderBottom: 0,
-                      },
-                    }}
-                  >
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.id}
-                    </TableCell>
-
-                    <TableCell className="mcontainer__tr-cell">
-                      {data.minor_category_name}
+          <Box>
+            <TableContainer className="mcontainer__th-body-category">
+              <Table className="mcontainer__table" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Id
                     </TableCell>
 
                     <TableCell
-                      className="mcontainer__tr-cell mcontainer__text-center
-                    "
+                      className="mcontainer__th-cell"
+                      sx={{ whiteSpace: "nowrap" }}
                     >
-                      {data.urgency_level}
+                      Minor Category
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.personally_assign ? " Yes" : " No"}
+                    <TableCell
+                      className="mcontainer__th-cell mcontainer__text-center"
+                      sx={{ whiteSpace: "nowrap" }}
+                    >
+                      Urgency Level
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.evaluate_in_every_movement ? " Yes" : " No"}
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center mcontainer__text-font">
+                      Personally Assigned
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.is_active ? (
-                        <Typography
-                          color="success.main"
-                          sx={{
-                            px: 1,
-                            maxWidth: "10ch",
-                            margin: "0 auto",
-                            fontSize: "13px",
-                            background: "#26f57c2a",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          ACTIVE
-                        </Typography>
-                      ) : (
-                        <Typography
-                          align="center"
-                          color="errorColor.main"
-                          sx={{
-                            px: 1,
-                            maxWidth: "10ch",
-                            margin: "0 auto",
-                            fontSize: "13px",
-                            background: "#fc3e3e34",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          INACTIVE
-                        </Typography>
-                      )}
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center mcontainer__text-font">
+                      Evaluated in Every Movement
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {Moment(data.created_at).format("MMM DD, YYYY")}
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Status
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                      <ActionMenu
-                        status={status}
-                        data={data}
-                        onUpdateHandler={onUpdateHandler}
-                        onArchiveRestoreHandler={onArchiveRestoreHandler}
-                      />
+                    <TableCell
+                      className="mcontainer__th-cell mcontainer__text-center"
+                      sx={{ whiteSpace: "nowrap" }}
+                    >
+                      Date Created
+                    </TableCell>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Action
                     </TableCell>
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                </TableHead>
 
-      <Box className="mcontainer__pagination">
-        <TablePagination
-          rowsPerPageOptions={[
-            5,
-            10,
-            15,
-            {
-              label: "All",
-              value: parseInt(minorCategoryData?.total),
-            },
-          ]}
-          component="div"
-          count={minorCategorySuccess ? minorCategoryData.total : 0}
-          page={minorCategorySuccess ? minorCategoryData.current_page - 1 : 0}
-          rowsPerPage={
-            minorCategorySuccess ? parseInt(minorCategoryData?.per_page) : 5
-          }
-          onPageChange={pageHandler}
-          onRowsPerPageChange={limitHandler}
-        />
-      </Box>
+                <TableBody>
+                  {minorCategorySuccess &&
+                    minorCategoryData.data.map((data) => (
+                      <TableRow
+                        key={data.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            borderBottom: 0,
+                          },
+                        }}
+                      >
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.id}
+                        </TableCell>
 
-      <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
-        <AddMinorCategory
-          data={updateMinorCategory}
-          onUpdateResetHandler={onUpdateResetHandler}
-        />
-      </Dialog>
-    </Box>
+                        <TableCell className="mcontainer__tr-cell">
+                          {data.minor_category_name}
+                        </TableCell>
+
+                        <TableCell
+                          className="mcontainer__tr-cell mcontainer__text-center
+                    "
+                        >
+                          {data.urgency_level}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.personally_assign ? " Yes" : " No"}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.evaluate_in_every_movement ? " Yes" : " No"}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.is_active ? (
+                            <Typography
+                              color="success.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#26f57c2a",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              ACTIVE
+                            </Typography>
+                          ) : (
+                            <Typography
+                              align="center"
+                              color="errorColor.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#fc3e3e34",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              INACTIVE
+                            </Typography>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {Moment(data.created_at).format("MMM DD, YYYY")}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                          <ActionMenu
+                            status={status}
+                            data={data}
+                            onUpdateHandler={onUpdateHandler}
+                            onArchiveRestoreHandler={onArchiveRestoreHandler}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          <Box className="mcontainer__pagination">
+            <TablePagination
+              rowsPerPageOptions={[
+                5,
+                10,
+                15,
+                {
+                  label: "All",
+                  value: parseInt(minorCategoryData?.total),
+                },
+              ]}
+              component="div"
+              count={minorCategorySuccess ? minorCategoryData.total : 0}
+              page={
+                minorCategorySuccess ? minorCategoryData.current_page - 1 : 0
+              }
+              rowsPerPage={
+                minorCategorySuccess ? parseInt(minorCategoryData?.per_page) : 5
+              }
+              onPageChange={pageHandler}
+              onRowsPerPageChange={limitHandler}
+            />
+          </Box>
+
+          <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
+            <AddMinorCategory
+              data={updateMinorCategory}
+              onUpdateResetHandler={onUpdateResetHandler}
+            />
+          </Dialog>
+        </Box>
+      )}
+    </>
   );
 };
 

@@ -4,37 +4,56 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  background-color: index.$secondaryBg;
-  box-shadow: 10px, 20px, 10px;
-  border-radius: 20px;
-  height: 400px;
-  width: 100%;
-  box-shadow: 0px 0px 17px -8px rgba(0, 0, 0, 1);
-  margin-top: 20px;
-  margin-bottom: 50px;
+  margin: auto;
+
+  height: 80%;
+  width: 80%;
+
+  border-radius: 21px;
+  background: linear-gradient(225deg, #d6d6d6, #ffffff);
+  box-shadow: -6px 6px 12px #d9d9d9, 6px -6px 12px #ffffff;
+
+  @media (max-width: 640px) {
+    height: 50%;
+    margin: 10% auto;
+  }
+
+  @media (max-width: 350px) {
+    margin: 35% auto;
+  }
 
   &__wrapper {
     z-index: 1;
+    margin-top: 30px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: 10px;
-    color: white;
+    color: index.$text;
     text-align: center;
-    margin-top: 10%;
+  }
+
+  & &__typo {
+    margin-top: 70px;
+    @media (max-width: 640px) {
+      margin-top: 20px;
+      font-size: 1.5rem;
+    }
   }
 
   & &__svgBg {
     position: absolute;
     z-index: 0;
-    background-image: url("../assets/SVG/SWR.svg");
+    background-image: url("../Img/ErrorFetch.svg");
     background-repeat: no-repeat;
-    background-size: contain;
-    background-position: bottom;
-    height: 80%;
-    width: 80%;
-    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    border-radius: inherit;
+    height: 100%;
+    width: 100%;
+    top: 0;
   }
 }

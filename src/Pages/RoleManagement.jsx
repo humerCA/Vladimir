@@ -33,6 +33,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "./Skeleton/MasterlistSkeleton";
+import ErrorFetching from "./ErrorFetching";
 
 const Role = () => {
   const [search, setSearch] = useState("");
@@ -43,8 +45,7 @@ const Role = () => {
     status: false,
     id: null,
     role_name: "",
-    address: "",
-    contact_no: null,
+    access_permission: [],
   });
 
   const drawer = useSelector((state) => state.drawer);
@@ -63,6 +64,7 @@ const Role = () => {
     isLoading: roleLoading,
     isSuccess: roleSuccess,
     isError: roleError,
+    refetch,
   } = useGetRoleApiQuery(
     {
       page: page,
@@ -120,13 +122,12 @@ const Role = () => {
   };
 
   const onUpdateHandler = (props) => {
-    const { id, role_name, address, contact_no } = props;
+    const { id, role_name, access_permission } = props;
     setUpdateRole({
       status: true,
       id: id,
       role_name: role_name,
-      address: address,
-      contact_no: contact_no,
+      access_permission: access_permission,
     });
   };
 
@@ -135,8 +136,7 @@ const Role = () => {
       status: false,
       id: null,
       role_name: "",
-      address: "",
-      contact_no: null,
+      access_permission: null,
     });
   };
 
@@ -153,139 +153,144 @@ const Role = () => {
         Role Management
       </Typography>
 
-      <Box className="mcontainer__wrapper">
-        <MasterlistToolbar
-          path="#"
-          onStatusChange={setStatus}
-          onSearchChange={setSearch}
-          onSetPage={setPage}
-        />
+      {roleLoading && <MasterlistSkeleton />}
 
-        <Box>
-          <TableContainer>
-            <Table className="mcontainer__table" stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Id
-                  </TableCell>
+      {roleError && <ErrorFetching refetch={refetch} />}
 
-                  <TableCell className="mcontainer__th-cell">Role</TableCell>
-
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Access Permission
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Status
-                  </TableCell>
-
-                  <TableCell
-                    className="mcontainer__th-cell mcontainer__text-center"
-                    sx={{ whiteSpace: "nowrap" }}
-                  >
-                    Date Created
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {roleSuccess &&
-                  roleData.data.map((data) => (
-                    <TableRow
-                      key={data.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": {
-                          borderBottom: 0,
-                        },
-                      }}
-                    >
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {data.id}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell">
-                        {data.role_name}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        View
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {data.is_active ? (
-                          <Typography
-                            color="success.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#26f57c2a",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            ACTIVE
-                          </Typography>
-                        ) : (
-                          <Typography
-                            align="center"
-                            color="errorColor.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#fc3e3e34",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            INACTIVE
-                          </Typography>
-                        )}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {Moment(data.created_at).format("MMM DD, YYYY")}
-                      </TableCell>
-
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                        <ActionMenu
-                          status={status}
-                          data={data}
-                          onUpdateHandler={onUpdateHandler}
-                          onArchiveRestoreHandler={onArchiveRestoreHandler}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-
-        <Box className="mcontainer__pagination">
-          <TablePagination
-            rowsPerPageOptions={[
-              5,
-              10,
-              15,
-              { label: "All", value: parseInt(roleData?.total) },
-            ]}
-            component="div"
-            count={roleSuccess ? roleData.total : 0}
-            page={roleSuccess ? roleData.current_page - 1 : 0}
-            rowsPerPage={roleSuccess ? parseInt(roleData?.per_page) : 5}
-            onPageChange={pageHandler}
-            onRowsPerPageChange={limitHandler}
+      {roleData && (
+        <Box className="mcontainer__wrapper">
+          <MasterlistToolbar
+            path="#"
+            onStatusChange={setStatus}
+            onSearchChange={setSearch}
+            onSetPage={setPage}
           />
-        </Box>
-      </Box>
 
+          <Box>
+            <TableContainer className="mcontainer__th-body">
+              <Table className="mcontainer__table" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Id
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell">Role</TableCell>
+
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Access Permission
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Status
+                    </TableCell>
+
+                    <TableCell
+                      className="mcontainer__th-cell mcontainer__text-center"
+                      sx={{ whiteSpace: "nowrap" }}
+                    >
+                      Date Created
+                    </TableCell>
+
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Action
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {roleSuccess &&
+                    roleData.data.map((data) => (
+                      <TableRow
+                        key={data.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            borderBottom: 0,
+                          },
+                        }}
+                      >
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.id}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell">
+                          {data.role_name}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          View
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.is_active ? (
+                            <Typography
+                              color="success.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#26f57c2a",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              ACTIVE
+                            </Typography>
+                          ) : (
+                            <Typography
+                              align="center"
+                              color="errorColor.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#fc3e3e34",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              INACTIVE
+                            </Typography>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {Moment(data.created_at).format("MMM DD, YYYY")}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                          <ActionMenu
+                            status={status}
+                            data={data}
+                            onUpdateHandler={onUpdateHandler}
+                            onArchiveRestoreHandler={onArchiveRestoreHandler}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          <Box className="mcontainer__pagination">
+            <TablePagination
+              rowsPerPageOptions={[
+                5,
+                10,
+                15,
+                { label: "All", value: parseInt(roleData?.total) },
+              ]}
+              component="div"
+              count={roleSuccess ? roleData.total : 0}
+              page={roleSuccess ? roleData.current_page - 1 : 0}
+              rowsPerPage={roleSuccess ? parseInt(roleData?.per_page) : 5}
+              onPageChange={pageHandler}
+              onRowsPerPageChange={limitHandler}
+            />
+          </Box>
+        </Box>
+      )}
       <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
         <AddRole
           data={updateRole}

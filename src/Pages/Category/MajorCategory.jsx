@@ -31,6 +31,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
+import ErrorFetching from "../ErrorFetching";
 
 const MajorCategory = () => {
   const [search, setSearch] = useState("");
@@ -60,6 +62,7 @@ const MajorCategory = () => {
     isLoading: majorCategoryLoading,
     isSuccess: majorCategorySuccess,
     isError: majorCategoryError,
+    refetch,
   } = useGetMajorCategoryApiQuery(
     {
       page: page,
@@ -159,155 +162,165 @@ const MajorCategory = () => {
     }
   };
   return (
-    <Box className="mcontainer__wrapper">
-      <MasterlistToolbar
-        path="#"
-        onStatusChange={setStatus}
-        onSearchChange={setSearch}
-        onSetPage={setPage}
-      />
+    <>
+      {majorCategoryLoading && <MasterlistSkeleton />}
 
-      <Box>
-        <TableContainer className="mcontainer__th-body-category">
-          <Table className="mcontainer__table" stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Id
-                </TableCell>
+      {majorCategoryError && <ErrorFetching refetch={refetch} />}
 
-                <TableCell
-                  className="mcontainer__th-cell"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Major Category
-                </TableCell>
+      {majorCategorySuccess && (
+        <Box className="mcontainer__wrapper">
+          <MasterlistToolbar
+            path="#"
+            onStatusChange={setStatus}
+            onSearchChange={setSearch}
+            onSetPage={setPage}
+          />
 
-                <TableCell className="mcontainer__th-cell">
-                  Classification
-                </TableCell>
-
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Status
-                </TableCell>
-
-                <TableCell
-                  className="mcontainer__th-cell mcontainer__text-center"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Date Created
-                </TableCell>
-
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {majorCategorySuccess &&
-                majorCategoryData.data.map((data) => (
-                  <TableRow
-                    key={data.id}
-                    sx={{
-                      "&:last-child td, &:last-child th": {
-                        borderBottom: 0,
-                      },
-                    }}
-                  >
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.id}
+          <Box>
+            <TableContainer className="mcontainer__th-body-category">
+              <Table className="mcontainer__table" stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Id
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell">
-                      {data.major_category_name}
+                    <TableCell
+                      className="mcontainer__th-cell"
+                      sx={{ whiteSpace: "nowrap" }}
+                    >
+                      Major Category
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell">
-                      {classOptions(data.classification)}
+                    <TableCell className="mcontainer__th-cell">
+                      Classification
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {data.is_active ? (
-                        <Typography
-                          color="success.main"
-                          sx={{
-                            px: 1,
-                            maxWidth: "10ch",
-                            margin: "0 auto",
-                            fontSize: "13px",
-                            background: "#26f57c2a",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          ACTIVE
-                        </Typography>
-                      ) : (
-                        <Typography
-                          align="center"
-                          color="errorColor.main"
-                          sx={{
-                            px: 1,
-                            maxWidth: "10ch",
-                            margin: "0 auto",
-                            fontSize: "13px",
-                            background: "#fc3e3e34",
-                            borderRadius: "8px",
-                          }}
-                        >
-                          INACTIVE
-                        </Typography>
-                      )}
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Status
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                      {Moment(data.created_at).format("MMM DD, YYYY")}
+                    <TableCell
+                      className="mcontainer__th-cell mcontainer__text-center"
+                      sx={{ whiteSpace: "nowrap" }}
+                    >
+                      Date Created
                     </TableCell>
 
-                    <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                      <ActionMenu
-                        status={status}
-                        data={data}
-                        onUpdateHandler={onUpdateHandler}
-                        onArchiveRestoreHandler={onArchiveRestoreHandler}
-                      />
+                    <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                      Action
                     </TableCell>
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                </TableHead>
 
-      <Box className="mcontainer__pagination">
-        <TablePagination
-          rowsPerPageOptions={[
-            5,
-            10,
-            15,
-            {
-              label: "All",
-              value: parseInt(majorCategoryData?.total),
-            },
-          ]}
-          component="div"
-          count={majorCategorySuccess ? majorCategoryData.total : 0}
-          page={majorCategorySuccess ? majorCategoryData.current_page - 1 : 0}
-          rowsPerPage={
-            majorCategorySuccess ? parseInt(majorCategoryData?.per_page) : 5
-          }
-          onPageChange={pageHandler}
-          onRowsPerPageChange={limitHandler}
-        />
-      </Box>
+                <TableBody>
+                  {majorCategorySuccess &&
+                    majorCategoryData.data.map((data) => (
+                      <TableRow
+                        key={data.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": {
+                            borderBottom: 0,
+                          },
+                        }}
+                      >
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.id}
+                        </TableCell>
 
-      <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
-        <AddMajorCategory
-          data={updateMajorCategory}
-          onUpdateResetHandler={onUpdateResetHandler}
-        />
-      </Dialog>
-    </Box>
+                        <TableCell className="mcontainer__tr-cell">
+                          {data.major_category_name}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell">
+                          {classOptions(data.classification)}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {data.is_active ? (
+                            <Typography
+                              color="success.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#26f57c2a",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              ACTIVE
+                            </Typography>
+                          ) : (
+                            <Typography
+                              align="center"
+                              color="errorColor.main"
+                              sx={{
+                                px: 1,
+                                maxWidth: "10ch",
+                                margin: "0 auto",
+                                fontSize: "13px",
+                                background: "#fc3e3e34",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              INACTIVE
+                            </Typography>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                          {Moment(data.created_at).format("MMM DD, YYYY")}
+                        </TableCell>
+
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                          <ActionMenu
+                            status={status}
+                            data={data}
+                            onUpdateHandler={onUpdateHandler}
+                            onArchiveRestoreHandler={onArchiveRestoreHandler}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+
+          <Box className="mcontainer__pagination">
+            <TablePagination
+              rowsPerPageOptions={[
+                5,
+                10,
+                15,
+                {
+                  label: "All",
+                  value: parseInt(majorCategoryData?.total),
+                },
+              ]}
+              component="div"
+              count={majorCategorySuccess ? majorCategoryData.total : 0}
+              page={
+                majorCategorySuccess ? majorCategoryData.current_page - 1 : 0
+              }
+              rowsPerPage={
+                majorCategorySuccess ? parseInt(majorCategoryData?.per_page) : 5
+              }
+              onPageChange={pageHandler}
+              onRowsPerPageChange={limitHandler}
+            />
+          </Box>
+
+          <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
+            <AddMajorCategory
+              data={updateMajorCategory}
+              onUpdateResetHandler={onUpdateResetHandler}
+            />
+          </Dialog>
+        </Box>
+      )}
+    </>
   );
 };
 

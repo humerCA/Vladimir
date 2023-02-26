@@ -10,6 +10,8 @@ export const userAccountsApi = createApi({
             const token = localStorage.getItem('token')
 
             headers.set('Authorization', `Bearer ${token}`)
+            headers.set('Accept', `application/json`)
+
             return headers
         }
     }),
@@ -58,7 +60,9 @@ export const userAccountsApi = createApi({
             query: ({id, ...data}) => ({
                 url: `/auth/reset/${id}`,
                 method: "PUT",
-                body: data
+                body: {
+                    id: id
+                }
             }),
             invalidatesTags:  ["User"]
         }),

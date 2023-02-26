@@ -31,6 +31,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
+import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
+import ErrorFetching from "../ErrorFetching";
 
 const CategoryList = () => {
   const [search, setSearch] = useState("");
@@ -39,6 +41,7 @@ const CategoryList = () => {
   const [page, setPage] = useState(1);
   const [updateCategoryList, setUpdateCategoryList] = useState({
     status: false,
+    action: "", // updateCategory || addMinor
     id: null,
     service_provider_id: null,
     major_category_id: null,
@@ -61,6 +64,7 @@ const CategoryList = () => {
     isLoading: categoryListLoading,
     isSuccess: categoryListSuccess,
     isError: categoryListError,
+    refetch,
   } = useGetCategoryListApiQuery(
     {
       page: page,
@@ -122,6 +126,8 @@ const CategoryList = () => {
     const { id, service_provider, major_category, category_list_tag } = props;
     setUpdateCategoryList({
       status: true,
+      action: "updateCategory",
+
       id: id,
       service_provider_id: service_provider,
       major_category_id: major_category,
@@ -141,89 +147,115 @@ const CategoryList = () => {
     });
   };
 
+  const onAddMinorCategoryHandler = (props) => {
+    const { id, service_provider, major_category, category_list_tag } = props;
+    setUpdateCategoryList({
+      status: true,
+      action: "addMinor",
+
+      id: id,
+      service_provider_id: service_provider,
+      major_category_id: major_category,
+      minor_category_id: category_list_tag.map((item) => {
+        return item.minor_category;
+      }),
+    });
+  };
+
   const onSetPage = () => {
     setPage(1);
   };
 
   return (
-    <Box className="mcontainer__wrapper">
-      <MasterlistToolbar
-        path="#"
-        onStatusChange={setStatus}
-        onSearchChange={setSearch}
-        onSetPage={setPage}
-      />
+    <>
+      {categoryListLoading && <MasterlistSkeleton />}
 
-      <Box className="mcontainer__wrapper">
-        <TableContainer className="mcontainer__th-body-category">
-          <Table className="mcontainer__table" stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell className="mcontainer__th-cell">Collapse</TableCell>
+      {categoryListError && <ErrorFetching refetch={refetch} />}
 
-                <TableCell className="mcontainer__th-cell">Category</TableCell>
+      {categoryListSuccess && (
+        <Box className="mcontainer__wrapper">
+          <MasterlistToolbar
+            path="#"
+            onStatusChange={setStatus}
+            onSearchChange={setSearch}
+            onSetPage={setPage}
+          />
 
-                <TableCell className="mcontainer__th-cell">
-                  Service Provider
-                </TableCell>
+          <TableContainer className="mcontainer__th-body-category">
+            <Table className="mcontainer__table" stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell className="mcontainer__th-cell">
+                    Collapse
+                  </TableCell>
 
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Status
-                </TableCell>
+                  <TableCell className="mcontainer__th-cell">
+                    Category
+                  </TableCell>
 
-                <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                  Date Created
-                </TableCell>
+                  <TableCell className="mcontainer__th-cell">
+                    Service Provider
+                  </TableCell>
 
-                <TableCell className="mcontainer__th-cell">Action</TableCell>
-              </TableRow>
-            </TableHead>
+                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                    Status
+                  </TableCell>
 
-            <TableBody>
-              {categoryListData &&
-                categoryListData.data.map((data) => (
-                  <CustomTableCollapse
-                    key={data.id}
-                    data={data}
-                    status={status}
-                    onUpdateHandler={onUpdateHandler}
-                    onArchiveRestoreHandler={onArchiveRestoreHandler}
-                  />
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                    Date Created
+                  </TableCell>
 
-      <Box className="mcontainer__pagination">
-        <TablePagination
-          rowsPerPageOptions={[
-            5,
-            10,
-            15,
-            {
-              label: "All",
-              value: parseInt(categoryListData?.total),
-            },
-          ]}
-          component="div"
-          count={categoryListSuccess ? categoryListData.total : 0}
-          page={categoryListSuccess ? categoryListData.current_page - 1 : 0}
-          rowsPerPage={
-            categoryListSuccess ? parseInt(categoryListData?.per_page) : 5
-          }
-          onPageChange={pageHandler}
-          onRowsPerPageChange={limitHandler}
-        />
-      </Box>
+                  <TableCell className="mcontainer__th-cell">Action</TableCell>
+                </TableRow>
+              </TableHead>
 
-      <Dialog anchor="right" open={drawer} onClose={() => {}}>
-        <AddCategoryList
-          data={updateCategoryList}
-          onUpdateResetHandler={onUpdateResetHandler}
-        />
-      </Dialog>
-    </Box>
+              <TableBody>
+                {categoryListData &&
+                  categoryListData.data.map((data) => (
+                    <CustomTableCollapse
+                      key={data.id}
+                      data={data}
+                      status={status}
+                      onUpdateHandler={onUpdateHandler}
+                      onArchiveRestoreHandler={onArchiveRestoreHandler}
+                      onAddMinorCategoryHandler={onAddMinorCategoryHandler}
+                    />
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Box className="mcontainer__pagination">
+            <TablePagination
+              rowsPerPageOptions={[
+                5,
+                10,
+                15,
+                {
+                  label: "All",
+                  value: parseInt(categoryListData?.total),
+                },
+              ]}
+              component="div"
+              count={categoryListSuccess ? categoryListData.total : 0}
+              page={categoryListSuccess ? categoryListData.current_page - 1 : 0}
+              rowsPerPage={
+                categoryListSuccess ? parseInt(categoryListData?.per_page) : 5
+              }
+              onPageChange={pageHandler}
+              onRowsPerPageChange={limitHandler}
+            />
+          </Box>
+
+          <Dialog anchor="right" open={drawer} onClose={() => {}}>
+            <AddCategoryList
+              data={updateCategoryList}
+              onUpdateResetHandler={onUpdateResetHandler}
+            />
+          </Dialog>
+        </Box>
+      )}
+    </>
   );
 };
 

@@ -16,6 +16,7 @@ import {
   useUpdateMajorCategoryApiMutation,
 } from "../../../Redux/Query/Category/MajorCategory";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -48,7 +49,12 @@ const AddMajorCategory = (props) => {
 
   const [
     postMajorCategory,
-    { isLoading, isSuccess: isPostSuccess, data: postData, isError },
+    {
+      isLoading: isPostLoading,
+      isSuccess: isPostSuccess,
+      data: postData,
+      isError,
+    },
   ] = usePostMajorCategoryApiMutation();
 
   const [
@@ -170,7 +176,7 @@ const AddMajorCategory = (props) => {
               sx={{
                 ".MuiInputBase-root": { borderRadius: "12px" },
               }}
-              error={errors?.classification?.message}
+              error={!!errors?.classification}
               helperText={errors?.classification?.message}
             />
           )}
@@ -187,15 +193,16 @@ const AddMajorCategory = (props) => {
           type="text"
           color="secondary"
           size="small"
-          error={errors?.major_category_name?.message}
+          error={!!errors?.major_category_name}
           helperText={errors?.major_category_name?.message}
           fullWidth
         />
         <Box className="add-masterlist__buttons">
-          <Button
+          <LoadingButton
             type="submit"
             variant="contained"
             size="small"
+            loading={isUpdateLoading || isPostLoading}
             disabled={
               (errors?.major_category_name ? true : false) ||
               watch("major_category_name") === undefined ||
@@ -206,7 +213,7 @@ const AddMajorCategory = (props) => {
             }
           >
             {data.status ? "Update" : "Create"}
-          </Button>
+          </LoadingButton>
 
           <Button
             variant="outlined"

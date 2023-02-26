@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Moment from "moment";
 import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
 import ActionMenu from "../../Components/Reusable/ActionMenu";
+import ErrorFetching from "../ErrorFetching";
 import AddModules from "./AddEdit/AddModules";
 
 // RTK
@@ -57,6 +58,7 @@ const Modules = () => {
     isLoading: modulesLoading,
     isSuccess: modulesSuccess,
     isError: modulesError,
+    refetch,
   } = useGetModulesApiQuery(
     {
       page: page,
@@ -142,134 +144,141 @@ const Modules = () => {
       >
         Modules
       </Typography>
-      {/* 
-      {isLoading && <MasterlistSkeleton />}
-      {modulesSuccess && <Error />} */}
 
-      <Box className="mcontainer__wrapper">
-        <MasterlistToolbar
-          path="#"
-          onStatusChange={setStatus}
-          onSearchChange={setSearch}
-          onSetPage={setPage}
-        />
+      {modulesLoading && <MasterlistSkeleton />}
 
-        <Box>
-          <TableContainer className="mcontainer__th-body">
-            <Table className="mcontainer__table" stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Id
-                  </TableCell>
+      {modulesError && <ErrorFetching refetch={refetch} />}
 
-                  <TableCell className="mcontainer__th-cell">Module</TableCell>
+      {modulesSuccess && (
+        <>
+          <Box className="mcontainer__wrapper">
+            <MasterlistToolbar
+              path="#"
+              onStatusChange={setStatus}
+              onSearchChange={setSearch}
+              onSetPage={setPage}
+            />
 
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Status
-                  </TableCell>
-
-                  <TableCell
-                    className="mcontainer__th-cell mcontainer__text-center"
-                    sx={{ whiteSpace: "nowrap" }}
-                  >
-                    Date Created
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
-                    Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {modulesSuccess &&
-                  modules.data.map((modules) => (
-                    <TableRow
-                      key={modules.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": {
-                          borderBottom: 0,
-                        },
-                      }}
-                    >
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {modules.id}
+            <Box>
+              <TableContainer className="mcontainer__th-body">
+                <Table className="mcontainer__table" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                        Id
                       </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
-                        {modules.module_name}
+                      <TableCell className="mcontainer__th-cell">
+                        Module
                       </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {modules.is_active ? (
-                          <Typography
-                            color="success.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#26f57c2a",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            ACTIVE
-                          </Typography>
-                        ) : (
-                          <Typography
-                            align="center"
-                            color="errorColor.main"
-                            sx={{
-                              px: 1,
-                              maxWidth: "10ch",
-                              margin: "0 auto",
-                              fontSize: "13px",
-                              background: "#fc3e3e34",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            INACTIVE
-                          </Typography>
-                        )}
+                      <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                        Status
                       </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {Moment(modules.created_at).format("MMM DD, YYYY")}
+                      <TableCell
+                        className="mcontainer__th-cell mcontainer__text-center"
+                        sx={{ whiteSpace: "nowrap" }}
+                      >
+                        Date Created
                       </TableCell>
 
-                      <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                        <ActionMenu
-                          status={status}
-                          data={modules}
-                          onUpdateHandler={onUpdateHandler}
-                          onArchiveRestoreHandler={onArchiveRestoreHandler}
-                        />
+                      <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                        Action
                       </TableCell>
                     </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
+                  </TableHead>
 
-        <Box className="mcontainer__pagination">
-          <TablePagination
-            rowsPerPageOptions={[
-              5,
-              10,
-              15,
-              { label: "All", value: parseInt(modules?.total) },
-            ]}
-            component="div"
-            count={modulesSuccess ? modules.total : 0}
-            page={modulesSuccess ? modules.current_page - 1 : 0}
-            rowsPerPage={modulesSuccess ? parseInt(modules?.per_page) : 5}
-            onPageChange={pageHandler}
-            onRowsPerPageChange={limitHandler}
-          />
-        </Box>
-      </Box>
+                  <TableBody>
+                    {modulesSuccess &&
+                      modules.data.map((modules) => (
+                        <TableRow
+                          key={modules.id}
+                          sx={{
+                            "&:last-child td, &:last-child th": {
+                              borderBottom: 0,
+                            },
+                          }}
+                        >
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            {modules.id}
+                          </TableCell>
+
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
+                            {modules.module_name}
+                          </TableCell>
+
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            {modules.is_active ? (
+                              <Typography
+                                color="success.main"
+                                sx={{
+                                  px: 1,
+                                  maxWidth: "10ch",
+                                  margin: "0 auto",
+                                  fontSize: "13px",
+                                  background: "#26f57c2a",
+                                  borderRadius: "8px",
+                                }}
+                              >
+                                ACTIVE
+                              </Typography>
+                            ) : (
+                              <Typography
+                                align="center"
+                                color="errorColor.main"
+                                sx={{
+                                  px: 1,
+                                  maxWidth: "10ch",
+                                  margin: "0 auto",
+                                  fontSize: "13px",
+                                  background: "#fc3e3e34",
+                                  borderRadius: "8px",
+                                }}
+                              >
+                                INACTIVE
+                              </Typography>
+                            )}
+                          </TableCell>
+
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            {Moment(modules.created_at).format("MMM DD, YYYY")}
+                          </TableCell>
+
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                            <ActionMenu
+                              status={status}
+                              data={modules}
+                              onUpdateHandler={onUpdateHandler}
+                              onArchiveRestoreHandler={onArchiveRestoreHandler}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            <Box className="mcontainer__pagination">
+              <TablePagination
+                rowsPerPageOptions={[
+                  5,
+                  10,
+                  15,
+                  { label: "All", value: parseInt(modules?.total) },
+                ]}
+                component="div"
+                count={modulesSuccess ? modules.total : 0}
+                page={modulesSuccess ? modules.current_page - 1 : 0}
+                rowsPerPage={modulesSuccess ? parseInt(modules?.per_page) : 5}
+                onPageChange={pageHandler}
+                onRowsPerPageChange={limitHandler}
+              />
+            </Box>
+          </Box>
+        </>
+      )}
 
       <Dialog open={drawer} PaperProps={{ sx: { borderRadius: "10px" } }}>
         <AddModules
