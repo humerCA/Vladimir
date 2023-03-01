@@ -29,18 +29,18 @@ const CustomTableCollapse = (props) => {
   return (
     <>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell className="mcontainer__tr-cell">
+        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
           <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
           </IconButton>
         </TableCell>
 
         <TableCell className="mcontainer__tr-cell">
-          {data.major_category.major_category_name}
+          {data.service_provider.service_provider_name}
         </TableCell>
 
         <TableCell className="mcontainer__tr-cell">
-          {data.service_provider.service_provider_name}
+          {data.major_category.major_category_name}
         </TableCell>
 
         <TableCell className="mcontainer__tr-cell mcontainer__text-center">

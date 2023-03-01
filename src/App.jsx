@@ -27,11 +27,12 @@ import {
   SwipeableDrawer,
 } from "@mui/material";
 import RoleManagement from "./Pages/RoleManagement";
+import PageNotFound from "./Pages/PageNotFound";
 
 const router = createBrowserRouter([
   {
     path: "*",
-    element: <NotFound />,
+    element: <PageNotFound />,
   },
   {
     path: "login",
@@ -167,6 +168,13 @@ const theme = createTheme({
       light: "#f1f1f1",
       main: "#EEEEEE",
       dark: "#a6a6a6",
+      contrastText: "#222831",
+    },
+
+    link: {
+      light: "#35baf6",
+      main: "#03a9f4",
+      dark: "#0276aa",
       contrastText: "#222831",
     },
 

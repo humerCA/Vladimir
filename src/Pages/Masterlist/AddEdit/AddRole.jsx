@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import CustomTextField from "../../../Components/Reusable/CustomTextField";
-import CustomPatternfield from "../../../Components/Reusable/CustomPatternfield";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -37,10 +36,10 @@ const AddRole = (props) => {
   const [
     postRole,
     {
+      data: postData,
       isLoading,
       isLoading: isPostLoading,
       isSuccess: isPostSuccess,
-      data: postData,
       isError: isPostError,
       error: postError,
     },
@@ -123,7 +122,7 @@ const AddRole = (props) => {
       setValue("id", data.id);
       setValue("role_name", data.role_name);
       setValue("access_permission", data.access_permission);
-      // console.log(data);
+      console.log(data);
     }
   }, [data]);
 
@@ -148,6 +147,7 @@ const AddRole = (props) => {
       <Box sx={{ display: "flex", flexDirection: "row" }}>
         <Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Dashboard"
             control={
               <Checkbox
@@ -159,6 +159,7 @@ const AddRole = (props) => {
           />
 
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Masterlist"
             value="masterlist"
             control={
@@ -170,6 +171,7 @@ const AddRole = (props) => {
           />
 
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Role Management"
             value="role-management"
             control={
@@ -183,6 +185,7 @@ const AddRole = (props) => {
           />
 
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Asset for Tagging"
             value="asset-for-tagging"
             control={
@@ -196,6 +199,7 @@ const AddRole = (props) => {
           />
 
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Asset List"
             value="asset-list"
             control={
@@ -209,6 +213,7 @@ const AddRole = (props) => {
 
         <Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Request"
             value="request"
             control={
@@ -219,6 +224,7 @@ const AddRole = (props) => {
             }
           />
           <FormControlLabel
+            disabled={data.action === "view"}
             label="On Hand"
             value="on-hand"
             control={
@@ -229,6 +235,7 @@ const AddRole = (props) => {
             }
           />
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Disposal"
             value="disposal"
             control={
@@ -239,6 +246,7 @@ const AddRole = (props) => {
             }
           />
           <FormControlLabel
+            disabled={data.action === "view"}
             label="Reports"
             value="reports"
             control={
@@ -259,7 +267,11 @@ const AddRole = (props) => {
         color="secondary.main"
         sx={{ fontFamily: "Anton", fontSize: "1.5rem" }}
       >
-        {data.status ? "Edit Role" : "Add Role"}
+        {!data.status
+          ? "Add Role"
+          : data.action === "view"
+          ? "View Role"
+          : "Edit Role"}
       </Typography>
 
       <Box
@@ -270,6 +282,7 @@ const AddRole = (props) => {
         <CustomTextField
           required
           control={control}
+          disabled={data.action === "view"}
           name="role_name"
           label="Role Name"
           type="text"
@@ -282,7 +295,15 @@ const AddRole = (props) => {
 
         <Box>
           <FormControlLabel
-            label="Select Role"
+            sx={data.action === "view" ? { display: "none" } : null}
+            label={
+              !data.status
+                ? "Select Role"
+                : data.action === "view"
+                ? "Selected Role"
+                : "Select Roles"
+            }
+            disabled={data.action === "view"}
             control={
               <Checkbox
                 checked={watch("access_permission")?.length === 9}
@@ -290,6 +311,11 @@ const AddRole = (props) => {
                   watch("access_permission")?.length >= 1 &&
                   watch("access_permission")?.length <= 8
                 }
+                // checked={watch("access_permission")?.length === 9}
+                // indeterminate={
+                //   watch("access_permission")?.length >= 1 &&
+                //   watch("access_permission")?.length <= 8
+                // }
                 onChange={(e) => {
                   if (e.target.checked) {
                     setValue("access_permission", [
@@ -310,6 +336,7 @@ const AddRole = (props) => {
               />
             }
           />
+
           <Children />
         </Box>
 
@@ -323,10 +350,12 @@ const AddRole = (props) => {
               (errors?.role_name ? true : false) ||
               watch("role_name") === undefined ||
               watch("role_name") === "" ||
-              watch("access_permission")?.length === 0
+              watch("access_permission")?.length === 0 ||
+              data.action === "view"
             }
+            sx={data.action === "view" ? { display: "none" } : null}
           >
-            {data.status ? "Update" : "Create"}
+            {!data.status ? "Create" : "Update"}
           </LoadingButton>
 
           <Button
@@ -335,7 +364,11 @@ const AddRole = (props) => {
             size="small"
             onClick={handleCloseDrawer}
           >
-            Cancel
+            {!data.status
+              ? "Cancel"
+              : data.action === "view"
+              ? "Close"
+              : "Cancel"}
           </Button>
         </Box>
       </Box>

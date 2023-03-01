@@ -5,10 +5,6 @@ import { Box, Button, Typography } from "@mui/material";
 const ErrorFetching = (props) => {
   const { refetch } = props;
 
-  const reload = () => {
-    location.reload();
-  };
-
   return (
     <Box className="errorFetching">
       <Box className="errorFetching__wrapper">

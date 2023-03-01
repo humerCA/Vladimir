@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import Moment from "moment";
 import MasterlistToolbar from "../../Components/Reusable/MasterlistToolbar";
 import ActionMenu from "../../Components/Reusable/ActionMenu";
+import ErrorFetching from "../ErrorFetching";
 import AddServiceProvider from "./AddEdit/AddServiceProvider";
 
 // RTK
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openToast } from "../../Redux/StateManagement/toastSlice";
 import {
   openConfirm,
@@ -15,8 +16,6 @@ import {
   usePostServiceProviderStatusApiMutation,
   useGetServiceProvidersApiQuery,
 } from "../../Redux/Query/ServiceProviderApi";
-
-import { useSelector } from "react-redux";
 
 // MUI
 import {
@@ -33,7 +32,6 @@ import {
 } from "@mui/material";
 import { Help, ReportProblem } from "@mui/icons-material";
 import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
-import ErrorFetching from "../ErrorFetching";
 
 const ServiceProvider = () => {
   const [search, setSearch] = useState("");
@@ -53,7 +51,7 @@ const ServiceProvider = () => {
   };
 
   const pageHandler = (_, page) => {
-    console.log(page + 1);
+    // console.log(page + 1);
     setPage(page + 1);
   };
 

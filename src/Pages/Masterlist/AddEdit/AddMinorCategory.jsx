@@ -27,6 +27,7 @@ import {
   useUpdateMinorCategoryApiMutation,
 } from "../../../Redux/Query/Category/MinorCategory";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
+import { LoadingButton } from "@mui/lab";
 
 const schema = yup.object().shape({
   id: yup.string(),
@@ -43,10 +44,11 @@ const AddMinorCategory = (props) => {
   const [
     postMinorCategory,
     {
+      data: postData,
       isLoading: isPostLoading,
       isSuccess: isPostSuccess,
-      data: postData,
-      isError,
+      isError: isPostError,
+      error: postError,
     },
   ] = usePostMinorCategoryApiMutation();
 
@@ -57,6 +59,7 @@ const AddMinorCategory = (props) => {
       isSuccess: isUpdateSuccess,
       data: updateData,
       isError: isUpdateError,
+      error: updateError,
     },
   ] = useUpdateMinorCategoryApiMutation();
 
@@ -80,24 +83,44 @@ const AddMinorCategory = (props) => {
   });
 
   useEffect(() => {
-    if (isPostSuccess) {
+    if (
+      (isPostError || isUpdateError) &&
+      (postError?.status === 422 || updateError?.status === 422)
+    ) {
+      setError("minor_category_name", {
+        type: "validate",
+        message:
+          postError?.data?.errors.minor_category_name ||
+          updateError?.data?.errors.minor_category_name,
+      });
+    } else if (
+      (isPostError && postError?.status !== 422) ||
+      (isUpdateError && updateError?.status !== 422)
+    ) {
+      dispatch(
+        openToast({
+          message: "Something went wrong. Please try again.",
+          duration: 5000,
+          variant: "error",
+        })
+      );
+    }
+  }, [isPostError, isUpdateError]);
+
+  useEffect(() => {
+    if (isPostSuccess || isUpdateSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData.message,
+          message: postData?.message || updateData?.message,
           duration: 5000,
         })
       );
-    } else if (isUpdateSuccess) {
-      reset();
-      handleCloseDrawer();
-      dispatch(
-        openToast({
-          message: updateData.message,
-          duration: 5000,
-        })
-      );
+
+      setTimeout(() => {
+        onUpdateResetHandler();
+      }, 500);
     }
   }, [isPostSuccess, isUpdateSuccess]);
 
@@ -115,9 +138,6 @@ const AddMinorCategory = (props) => {
 
   const onSubmitHandler = (formData) => {
     if (data.status) {
-      setTimeout(() => {
-        onUpdateResetHandler();
-      }, 500);
       updateMinorCategory(formData);
       return;
     }

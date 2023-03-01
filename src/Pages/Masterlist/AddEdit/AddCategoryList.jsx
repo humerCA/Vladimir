@@ -29,6 +29,7 @@ const schema = yup.object().shape({
 
 const AddCategoryList = (props) => {
   const { data, onUpdateResetHandler } = props;
+
   const dispatch = useDispatch();
 
   const [
@@ -58,7 +59,6 @@ const AddCategoryList = (props) => {
     isLoading: isServiceProviderLoading,
     isError: isServiceProviderError,
   } = useGetServiceProviderAllApiQuery();
-  // console.log(serviceProviderData);
 
   const {
     data: majorCategoryData = [],
@@ -71,6 +71,8 @@ const AddCategoryList = (props) => {
     isLoading: isMinorCategoryLoading,
     isError: isMinorCategoryError,
   } = useGetMinorCategoryAllApiQuery();
+
+  // console.log(minorCategoryData);
 
   const {
     handleSubmit,
@@ -144,7 +146,7 @@ const AddCategoryList = (props) => {
       setValue("service_provider_id", data.service_provider_id);
       setValue("major_category_id", data.major_category_id);
       setValue("minor_category_id", data.minor_category_id);
-      // console.log(data);
+      console.log(data);
     }
   }, [data]);
 
@@ -161,7 +163,6 @@ const AddCategoryList = (props) => {
     if (data.status) {
       return updateCategoryList(newFormData);
     }
-
     postCategoryList(newFormData);
   };
 
@@ -254,12 +255,16 @@ const AddCategoryList = (props) => {
 
         <CustomAutoComplete
           autoComplete
+          disableCloseOnSelect
           name="minor_category_id"
           disabled={data.action === "updateCategory"}
           control={control}
           options={minorCategoryData}
           size="small"
           getOptionLabel={(option) => option.minor_category_name}
+          getOptionDisabled={(option) =>
+            watch("minor_category_id").some((item) => item.id === option.id)
+          }
           isOptionEqualToValue={(option, value) =>
             option.minor_category_name === value.minor_category_name
           }

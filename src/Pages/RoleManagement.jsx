@@ -7,6 +7,8 @@ import AddRole from "./Masterlist/AddEdit/AddRole";
 // RTK
 import { useDispatch } from "react-redux";
 import { openToast } from "../Redux/StateManagement/toastSlice";
+import { openDrawer } from "../Redux/StateManagement/drawerSlice";
+
 import {
   openConfirm,
   closeConfirm,
@@ -22,6 +24,7 @@ import { useSelector } from "react-redux";
 // MUI
 import {
   Box,
+  Button,
   Dialog,
   Table,
   TableBody,
@@ -32,7 +35,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Help, ReportProblem } from "@mui/icons-material";
+import { Help, PageviewRounded, ReportProblem } from "@mui/icons-material";
 import MasterlistSkeleton from "./Skeleton/MasterlistSkeleton";
 import ErrorFetching from "./ErrorFetching";
 
@@ -43,6 +46,7 @@ const Role = () => {
   const [page, setPage] = useState(1);
   const [updateRole, setUpdateRole] = useState({
     status: false,
+    action: "",
     id: null,
     role_name: "",
     access_permission: [],
@@ -125,6 +129,7 @@ const Role = () => {
     const { id, role_name, access_permission } = props;
     setUpdateRole({
       status: true,
+      action: "updateRole",
       id: id,
       role_name: role_name,
       access_permission: access_permission,
@@ -138,6 +143,28 @@ const Role = () => {
       role_name: "",
       access_permission: null,
     });
+  };
+
+  // const onStatusChangeHandler = (status) => {
+  //   if (status) setStatus("deactivated");
+  //   else setStatus("active");
+  // };
+
+  const onViewRoleHandler = (props) => {
+    const { id, role_name, access_permission } = props;
+    setUpdateRole({
+      status: true,
+      action: "view",
+      id: id,
+      role_name: role_name,
+      access_permission: access_permission,
+    });
+  };
+
+  const handleViewRole = (data) => {
+    onViewRoleHandler(data);
+    dispatch(openDrawer());
+    dispatch(closeConfirm());
   };
 
   const onSetPage = () => {
@@ -157,7 +184,7 @@ const Role = () => {
 
       {roleError && <ErrorFetching refetch={refetch} />}
 
-      {roleData && (
+      {roleSuccess && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"
@@ -200,74 +227,87 @@ const Role = () => {
 
                 <TableBody>
                   {roleSuccess &&
-                    roleData.data.map((data) => (
-                      <TableRow
-                        key={data.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": {
-                            borderBottom: 0,
-                          },
-                        }}
-                      >
-                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                          {data.id}
-                        </TableCell>
+                    roleData.data.map((data) => {
+                      return (
+                        <TableRow
+                          key={data.id}
+                          sx={{
+                            "&:last-child td, &:last-child th": {
+                              borderBottom: 0,
+                            },
+                          }}
+                        >
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            {data.id}
+                          </TableCell>
 
-                        <TableCell className="mcontainer__tr-cell">
-                          {data.role_name}
-                        </TableCell>
+                          <TableCell className="mcontainer__tr-cell">
+                            {data.role_name}
+                          </TableCell>
 
-                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                          View
-                        </TableCell>
-
-                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                          {data.is_active ? (
-                            <Typography
-                              color="success.main"
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            <Button
                               sx={{
-                                px: 1,
-                                maxWidth: "10ch",
-                                margin: "0 auto",
-                                fontSize: "13px",
-                                background: "#26f57c2a",
-                                borderRadius: "8px",
+                                textTransform: "capitalize",
+                                textDecoration: "underline",
                               }}
+                              variant="text"
+                              size="small"
+                              color="link"
+                              onClick={() => handleViewRole(data)}
                             >
-                              ACTIVE
-                            </Typography>
-                          ) : (
-                            <Typography
-                              align="center"
-                              color="errorColor.main"
-                              sx={{
-                                px: 1,
-                                maxWidth: "10ch",
-                                margin: "0 auto",
-                                fontSize: "13px",
-                                background: "#fc3e3e34",
-                                borderRadius: "8px",
-                              }}
-                            >
-                              INACTIVE
-                            </Typography>
-                          )}
-                        </TableCell>
+                              View
+                            </Button>
+                          </TableCell>
 
-                        <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                          {Moment(data.created_at).format("MMM DD, YYYY")}
-                        </TableCell>
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            {data.is_active ? (
+                              <Typography
+                                color="success.main"
+                                sx={{
+                                  px: 1,
+                                  maxWidth: "10ch",
+                                  margin: "0 auto",
+                                  fontSize: "13px",
+                                  background: "#26f57c2a",
+                                  borderRadius: "8px",
+                                }}
+                              >
+                                ACTIVE
+                              </Typography>
+                            ) : (
+                              <Typography
+                                align="center"
+                                color="errorColor.main"
+                                sx={{
+                                  px: 1,
+                                  maxWidth: "10ch",
+                                  margin: "0 auto",
+                                  fontSize: "13px",
+                                  background: "#fc3e3e34",
+                                  borderRadius: "8px",
+                                }}
+                              >
+                                INACTIVE
+                              </Typography>
+                            )}
+                          </TableCell>
 
-                        <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
-                          <ActionMenu
-                            status={status}
-                            data={data}
-                            onUpdateHandler={onUpdateHandler}
-                            onArchiveRestoreHandler={onArchiveRestoreHandler}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center">
+                            {Moment(data.created_at).format("MMM DD, YYYY")}
+                          </TableCell>
+
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-center ">
+                            <ActionMenu
+                              status={status}
+                              data={data}
+                              onUpdateHandler={onUpdateHandler}
+                              onArchiveRestoreHandler={onArchiveRestoreHandler}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
             </TableContainer>

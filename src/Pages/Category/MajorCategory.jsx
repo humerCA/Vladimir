@@ -35,6 +35,7 @@ import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
 import ErrorFetching from "../ErrorFetching";
 
 const MajorCategory = () => {
+  const category = true;
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [limit, setLimit] = useState(5);
@@ -163,7 +164,7 @@ const MajorCategory = () => {
   };
   return (
     <>
-      {majorCategoryLoading && <MasterlistSkeleton />}
+      {majorCategoryLoading && <MasterlistSkeleton category={category} />}
 
       {majorCategoryError && <ErrorFetching refetch={refetch} />}
 

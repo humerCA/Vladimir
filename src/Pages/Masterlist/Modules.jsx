@@ -12,8 +12,10 @@ import {
   openConfirm,
   closeConfirm,
 } from "../../Redux/StateManagement/confirmSlice";
-import { usePostModuleStatusApiMutation } from "../../Redux/Query/ModulesApi";
-import { useGetModulesApiQuery } from "../../Redux/Query/ModulesApi";
+import {
+  usePostModuleStatusApiMutation,
+  useGetModulesApiQuery,
+} from "../../Redux/Query/ModulesApi";
 
 // MUI
 import {

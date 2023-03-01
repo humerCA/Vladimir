@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../Style/Masterlist/masterlistToolbar.scss";
 import { Box } from "@mui/system";
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material";
@@ -25,7 +25,7 @@ const MasterlistToolbar = (props) => {
   };
 
   const statusHandler = (e) => {
-    // console.log(e);
+    console.log(e.target.checked);
     if (e.target.checked) {
       return onStatusChange("deactivated");
     }
@@ -43,10 +43,11 @@ const MasterlistToolbar = (props) => {
       <Box className="masterlist-toolbar__container">
         <Box className="toolbar__button-wrapper">
           <FormControlLabel
-            control={<Checkbox size="small" onChange={statusHandler} />}
+            control={<Checkbox size="small" onClick={statusHandler} />}
             label="ARCHIVED"
           />
         </Box>
+
         <Box className="masterlist-toolbar__addBtn">
           {Boolean(onImport) && (
             <Button

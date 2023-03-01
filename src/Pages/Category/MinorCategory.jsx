@@ -34,6 +34,7 @@ import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
 import ErrorFetching from "../ErrorFetching";
 
 const MinorCategory = () => {
+  const category = true;
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [limit, setLimit] = useState(5);
@@ -153,11 +154,11 @@ const MinorCategory = () => {
 
   return (
     <>
-      {minorCategoryLoading && <MasterlistSkeleton />}
+      {minorCategoryLoading && <MasterlistSkeleton category={category} />}
 
       {minorCategoryError && <ErrorFetching refetch={refetch} />}
 
-      {minorCategoryData && (
+      {minorCategorySuccess && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"

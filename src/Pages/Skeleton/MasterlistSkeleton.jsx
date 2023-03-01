@@ -2,26 +2,25 @@ import React from "react";
 import { Box, Skeleton } from "@mui/material";
 
 const MasterlistSkeleton = (props) => {
-  const { onImport } = props;
+  const { onImport, category } = props;
+
+  console.log(category);
 
   return (
     <>
-      <Box
-        sx={{
-          position: "absolute",
-          display: "flex",
-          right: 15,
-          gap: "10px",
-          top: 30,
-        }}
-      >
-        {Boolean(onImport) && (
-          <Skeleton variant={"rounded"} width="100px" height="33px" />
-        )}
-        <Skeleton variant={"rounded"} width="70px" height="33px" />
-      </Box>
-
-      <Box className="mcontainer__wrapper">
+      <Box className="mcontainer__wrapper" sx={{ position: "relative" }}>
+        <Skeleton
+          variant={"rounded"}
+          width="70px"
+          height="33px"
+          sx={{
+            display: "flex",
+            position: "absolute",
+            top: "-40px",
+            right: "5px",
+            gap: "10px",
+          }}
+        />
         <Box
           sx={{
             display: "flex",
@@ -41,7 +40,7 @@ const MasterlistSkeleton = (props) => {
             height="40px"
             sx={{ marginBottom: "10px" }}
           />
-          <Skeleton variant={"rounded"} height="46.5vh" />
+          <Skeleton variant={"rounded"} height={category ? "40vh" : "46.5vh"} />
         </Box>
 
         <Box sx={{ padding: "5px 20px 10px" }}>

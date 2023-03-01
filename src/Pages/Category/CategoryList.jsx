@@ -30,11 +30,16 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Help, ReportProblem } from "@mui/icons-material";
+import {
+  ExpandCircleDownOutlined,
+  Help,
+  ReportProblem,
+} from "@mui/icons-material";
 import MasterlistSkeleton from "../Skeleton/MasterlistSkeleton";
 import ErrorFetching from "../ErrorFetching";
 
 const CategoryList = () => {
+  const category = true;
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [limit, setLimit] = useState(5);
@@ -168,7 +173,7 @@ const CategoryList = () => {
 
   return (
     <>
-      {categoryListLoading && <MasterlistSkeleton />}
+      {categoryListLoading && <MasterlistSkeleton category={category} />}
 
       {categoryListError && <ErrorFetching refetch={refetch} />}
 
@@ -185,16 +190,16 @@ const CategoryList = () => {
             <Table className="mcontainer__table" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell className="mcontainer__th-cell">
-                    Collapse
-                  </TableCell>
-
-                  <TableCell className="mcontainer__th-cell">
-                    Category
+                  <TableCell className="mcontainer__th-cell mcontainer__text-center">
+                    <ExpandCircleDownOutlined />
                   </TableCell>
 
                   <TableCell className="mcontainer__th-cell">
                     Service Provider
+                  </TableCell>
+
+                  <TableCell className="mcontainer__th-cell">
+                    Category
                   </TableCell>
 
                   <TableCell className="mcontainer__th-cell mcontainer__text-center">
@@ -247,7 +252,7 @@ const CategoryList = () => {
             />
           </Box>
 
-          <Dialog anchor="right" open={drawer} onClose={() => {}}>
+          <Dialog open={drawer} onClose={() => {}}>
             <AddCategoryList
               data={updateCategoryList}
               onUpdateResetHandler={onUpdateResetHandler}

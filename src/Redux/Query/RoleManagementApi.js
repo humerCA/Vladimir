@@ -10,7 +10,7 @@ export const roleManagementApi = createApi({
             const token = localStorage.getItem('token')
 
             headers.set('Authorization', `Bearer ${token}`)
-            headers.set('Accept', `application/json`)
+            // headers.set('Accept', `application/json`)
 
             return headers
         }
