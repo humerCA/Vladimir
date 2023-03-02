@@ -1,33 +1,30 @@
-import HomePage from "./Layout/HomePage";
+import RoutingPage from "./Layout/RoutingPage";
+import Dashboard from "./Pages";
 import Masterlist from "./Pages/Masterlist";
-import NotFound from "./Layout/NotFound";
 import Confirmation from "./Components/Reusable/Confirmation";
 import Modules from "./Pages/Masterlist/Modules";
 import UserAccounts from "./Pages/Masterlist/UserAccounts";
 import ServiceProvider from "./Pages/Masterlist/ServiceProvider";
 import Category from "./Pages/Masterlist/Category";
 import Supplier from "./Pages/Masterlist/Supplier";
+import RoleManagement from "./Pages/RoleManagement";
+import PageNotFound from "./Pages/PageNotFound";
 
 // ROUTER
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import { LoginRoutes, PrivateRoutes } from "./Routes/PrivateRoutes";
 
 import { closeToast } from "./Redux/StateManagement/toastSlice";
-import { closeDrawer } from "./Redux/StateManagement/drawerSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 // MUI
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import {
-  Alert,
-  AlertTitle,
-  Dialog,
-  Snackbar,
-  SwipeableDrawer,
-} from "@mui/material";
-import RoleManagement from "./Pages/RoleManagement";
-import PageNotFound from "./Pages/PageNotFound";
+import { Alert, AlertTitle, Dialog, Snackbar } from "@mui/material";
 
 const router = createBrowserRouter([
   {
@@ -42,13 +39,20 @@ const router = createBrowserRouter([
     element: <PrivateRoutes />,
     children: [
       {
-        path: "/",
-        element: <HomePage />,
+        element: <RoutingPage />,
         children: [
+          {
+            path: "/",
+            element: <Dashboard />,
+          },
           {
             path: "masterlist",
             element: <Masterlist />,
             children: [
+              {
+                index: true,
+                element: <Navigate to="/masterlist/modules" />,
+              },
               {
                 path: "modules",
                 element: <Modules />,

@@ -218,7 +218,7 @@ const UserAccounts = () => {
 
       {usersError && <ErrorFetching refetch={refetch} />}
 
-      {usersSuccess && (
+      {users && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"

@@ -57,7 +57,19 @@ export const categoryListApi = createApi({
             invalidatesTags:  ["categoryList"]
         }),
 
+        updateMinorCategoryListApi: builder.mutation({
+            query: ({id, ...data}) => ({
+                url: `category-list/add-update-minorcategory/${id}`,
+                method: "PUT",
+                body: {
+                    minor_category: data.minor_category_id
+                }
+            }),
+            invalidatesTags:  ["categoryList"]
+        }),
+        
+
     }) 
 })
 
-export const { useGetCategoryListApiQuery, useGetCategoryListIdApiQuery, usePutCategoryListStatusApiMutation, usePostCategoryListApiMutation, useUpdateCategoryListApiMutation } = categoryListApi
+export const { useGetCategoryListApiQuery, useGetCategoryListIdApiQuery, usePutCategoryListStatusApiMutation, usePostCategoryListApiMutation, useUpdateCategoryListApiMutation, useUpdateMinorCategoryListApiMutation } = categoryListApi

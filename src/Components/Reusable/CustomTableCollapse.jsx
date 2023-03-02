@@ -91,7 +91,7 @@ const CustomTableCollapse = (props) => {
         </TableCell>
       </TableRow>
 
-      <TableRow sx={{ background: "#eeeeee" }}>
+      <TableRow sx={{ background: "whitesmoke" }}>
         <TableCell
           sx={{ paddingBottom: 0, paddingTop: 0, border: 0 }}
           colSpan={6}

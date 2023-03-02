@@ -17,6 +17,7 @@ import {
 import { useGetServiceProviderAllApiQuery } from "../../../Redux/Query/ServiceProviderApi";
 import { useGetMajorCategoryAllApiQuery } from "../../../Redux/Query/Category/MajorCategory";
 import { useGetMinorCategoryAllApiQuery } from "../../../Redux/Query/Category/MinorCategory";
+import { useUpdateMinorCategoryListApiMutation } from "../../../Redux/Query/Category/CategoryList";
 import { openToast } from "../../../Redux/StateManagement/toastSlice";
 import { LoadingButton } from "@mui/lab";
 
@@ -53,6 +54,17 @@ const AddCategoryList = (props) => {
       error: updateError,
     },
   ] = useUpdateCategoryListApiMutation();
+
+  const [
+    updateMinorCategory,
+    {
+      data: updateMinorData,
+      isLoading: isUpdateMinorLoading,
+      isSuccess: isUpdateMinorSuccess,
+      isError: isUpdateMinorError,
+      error: updateMinorError,
+    },
+  ] = useUpdateMinorCategoryListApiMutation();
 
   const {
     data: serviceProviderData = [],
@@ -94,24 +106,29 @@ const AddCategoryList = (props) => {
 
   useEffect(() => {
     if (
-      (isPostError || isUpdateError) &&
-      (postError?.status === 422 || updateError?.status === 422)
+      (isPostError || isUpdateError || isUpdateMinorError) &&
+      (postError?.status === 422 ||
+        updateError?.status === 422 ||
+        updateMinorError?.status === 422)
     ) {
       setError("service_provider_id", {
         type: "validate",
         message:
           postError?.data?.errors.categorylist ||
-          updateError?.data?.errors.categorylist,
+          updateError?.data?.errors.categorylist ||
+          updateMinorError?.data?.errors.categorylist,
       }) ||
         setError("major_category_id", {
           type: "validate",
           message:
             postError?.data?.errors.categorylist ||
-            updateError?.data?.errors.categorylist,
+            updateError?.data?.errors.categorylist ||
+            updateMinorError?.data?.errors.categorylist,
         });
     } else if (
       (isPostError && postError?.status !== 422) ||
-      (isUpdateError && updateError?.status !== 422)
+      (isUpdateError && updateError?.status !== 422) ||
+      (updateMinorError && updateError?.status !== 422)
     ) {
       dispatch(
         openToast({
@@ -121,15 +138,18 @@ const AddCategoryList = (props) => {
         })
       );
     }
-  }, [isPostError, isUpdateError]);
+  }, [isPostError, isUpdateError, isUpdateMinorError]);
 
   useEffect(() => {
-    if (isPostSuccess || isUpdateSuccess) {
+    if (isPostSuccess || isUpdateSuccess || isUpdateMinorSuccess) {
       reset();
       handleCloseDrawer();
       dispatch(
         openToast({
-          message: postData?.message || updateData?.message,
+          message:
+            postData?.message ||
+            updateData?.message ||
+            updateMinorData?.message,
           duration: 5000,
         })
       );
@@ -138,7 +158,7 @@ const AddCategoryList = (props) => {
         onUpdateResetHandler();
       }, 500);
     }
-  }, [isPostSuccess, isUpdateSuccess]);
+  }, [isPostSuccess, isUpdateSuccess, isUpdateMinorSuccess]);
 
   useEffect(() => {
     if (data.status) {
@@ -160,8 +180,15 @@ const AddCategoryList = (props) => {
       }),
     };
 
-    if (data.status) {
+    // if (data.status) {
+    //   return updateCategoryList(newFormData);
+    // }
+    // postCategoryList(newFormData);
+
+    if (data.status && data.action === "updateCategory") {
       return updateCategoryList(newFormData);
+    } else if (data.status && data.action === "addMinor") {
+      return updateMinorCategory(newFormData);
     }
     postCategoryList(newFormData);
   };
@@ -292,7 +319,7 @@ const AddCategoryList = (props) => {
             type="submit"
             variant="contained"
             size="small"
-            loading={isUpdateLoading || isPostLoading}
+            loading={isUpdateLoading || isPostLoading || isUpdateMinorLoading}
             disabled={
               (errors?.service_provider_id ? true : false) ||
               watch("service_provider_id") === null ||

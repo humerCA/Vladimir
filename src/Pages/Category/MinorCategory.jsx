@@ -158,7 +158,7 @@ const MinorCategory = () => {
 
       {minorCategoryError && <ErrorFetching refetch={refetch} />}
 
-      {minorCategorySuccess && (
+      {minorCategoryData && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"

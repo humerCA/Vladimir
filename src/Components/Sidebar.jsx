@@ -77,6 +77,7 @@ const Sidebar = () => {
       label: "Masterlist",
       icon: ListAlt,
       path: "/masterlist",
+      // path: "/masterlist/modules",
       permission: [],
       children: [
         {
@@ -121,6 +122,7 @@ const Sidebar = () => {
         setMasterlistCollapse(!masterlistCollapse);
         setRequestCollapse(false);
         setReportCollapse(false);
+        closeCollapse;
         dispatch(openSidebar());
       },
     },

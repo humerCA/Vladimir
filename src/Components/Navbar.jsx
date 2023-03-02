@@ -189,7 +189,15 @@ const Navbar = () => {
                 {breadcrumbNameMap[to]}
               </Typography>
             ) : (
-              <LinkRouter underline="hover" color="inherit" to={to} key={to}>
+              <LinkRouter
+                underline="hover"
+                color="inherit"
+                to={
+                  breadcrumbNameMap[to] !== "Masterlist" ||
+                  breadcrumbNameMap[to] !== ("Request" && to)
+                }
+                key={to}
+              >
                 {breadcrumbNameMap[to]}
               </LinkRouter>
             );

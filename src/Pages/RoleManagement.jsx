@@ -184,7 +184,7 @@ const Role = () => {
 
       {roleError && <ErrorFetching refetch={refetch} />}
 
-      {roleSuccess && (
+      {roleData && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"
@@ -241,7 +241,10 @@ const Role = () => {
                             {data.id}
                           </TableCell>
 
-                          <TableCell className="mcontainer__tr-cell">
+                          <TableCell
+                            className="mcontainer__tr-cell"
+                            sx={{ fontWeight: "bold" }}
+                          >
                             {data.role_name}
                           </TableCell>
 

@@ -160,7 +160,7 @@ const Supplier = () => {
 
       {supplierError && <ErrorFetching refetch={refetch} />}
 
-      {supplierSuccess && (
+      {supplierData && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"

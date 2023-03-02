@@ -177,7 +177,7 @@ const CategoryList = () => {
 
       {categoryListError && <ErrorFetching refetch={refetch} />}
 
-      {categoryListSuccess && (
+      {categoryListData && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"

@@ -122,7 +122,8 @@ const AddRole = (props) => {
       setValue("id", data.id);
       setValue("role_name", data.role_name);
       setValue("access_permission", data.access_permission);
-      console.log(data);
+
+      console.log(watch("access_permission"));
     }
   }, [data]);
 
@@ -149,10 +150,10 @@ const AddRole = (props) => {
           <FormControlLabel
             disabled={data.action === "view"}
             label="Dashboard"
+            value="dashboard"
             control={
               <Checkbox
                 {...register("access_permission")}
-                value="dashboard"
                 checked={watch("access_permission")?.includes("dashboard")}
               />
             }
@@ -270,7 +271,7 @@ const AddRole = (props) => {
         {!data.status
           ? "Add Role"
           : data.action === "view"
-          ? "View Role"
+          ? "Permissions"
           : "Edit Role"}
       </Typography>
 
@@ -303,6 +304,7 @@ const AddRole = (props) => {
                 ? "Selected Role"
                 : "Select Roles"
             }
+            value="parent"
             disabled={data.action === "view"}
             control={
               <Checkbox
@@ -311,11 +313,6 @@ const AddRole = (props) => {
                   watch("access_permission")?.length >= 1 &&
                   watch("access_permission")?.length <= 8
                 }
-                // checked={watch("access_permission")?.length === 9}
-                // indeterminate={
-                //   watch("access_permission")?.length >= 1 &&
-                //   watch("access_permission")?.length <= 8
-                // }
                 onChange={(e) => {
                   if (e.target.checked) {
                     setValue("access_permission", [

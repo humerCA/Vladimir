@@ -151,7 +151,7 @@ const Modules = () => {
 
       {modulesError && <ErrorFetching refetch={refetch} />}
 
-      {modulesSuccess && (
+      {modules && (
         <>
           <Box className="mcontainer__wrapper">
             <MasterlistToolbar

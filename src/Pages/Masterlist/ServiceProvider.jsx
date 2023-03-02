@@ -152,7 +152,7 @@ const ServiceProvider = () => {
 
       {serviceProviderError && <ErrorFetching refetch={refetch} />}
 
-      {serviceProviderSuccess && (
+      {serviceProviderData && (
         <Box className="mcontainer__wrapper">
           <MasterlistToolbar
             path="#"
