@@ -145,11 +145,6 @@ const Role = () => {
     });
   };
 
-  // const onStatusChangeHandler = (status) => {
-  //   if (status) setStatus("deactivated");
-  //   else setStatus("active");
-  // };
-
   const onViewRoleHandler = (props) => {
     const { id, role_name, access_permission } = props;
     setUpdateRole({
@@ -241,10 +236,7 @@ const Role = () => {
                             {data.id}
                           </TableCell>
 
-                          <TableCell
-                            className="mcontainer__tr-cell"
-                            sx={{ fontWeight: "bold" }}
-                          >
+                          <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
                             {data.role_name}
                           </TableCell>
 

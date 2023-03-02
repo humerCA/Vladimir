@@ -179,7 +179,7 @@ const Supplier = () => {
                     </TableCell>
 
                     <TableCell className="mcontainer__th-cell">
-                      Service Provider
+                      Supplier
                     </TableCell>
 
                     <TableCell className="mcontainer__th-cell">
@@ -222,7 +222,7 @@ const Supplier = () => {
                           {data.id}
                         </TableCell>
 
-                        <TableCell className="mcontainer__tr-cell">
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
                           {data.supplier_name}
                         </TableCell>
 

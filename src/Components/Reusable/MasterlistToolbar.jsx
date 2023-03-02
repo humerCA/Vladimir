@@ -27,8 +27,10 @@ const MasterlistToolbar = (props) => {
   const statusHandler = (e) => {
     console.log(e.target.checked);
     if (e.target.checked) {
+      onSetPage(1);
       return onStatusChange("deactivated");
     }
+    onSetPage(1);
     return onStatusChange("active");
   };
 

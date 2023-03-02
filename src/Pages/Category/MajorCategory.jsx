@@ -229,7 +229,7 @@ const MajorCategory = () => {
                           {data.id}
                         </TableCell>
 
-                        <TableCell className="mcontainer__tr-cell">
+                        <TableCell className="mcontainer__tr-cell mcontainer__text-weight">
                           {data.major_category_name}
                         </TableCell>
 

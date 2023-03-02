@@ -124,6 +124,7 @@ img {
     padding: 10px 20px;
     border-bottom: 3px solid $background;
     overflow-y: overlay;
+    color: $text;
 
     @media (max-height: 600px) {
       padding: 8px 20px;
@@ -137,8 +138,8 @@ img {
   }
 
   & &__text-weight {
-    color: $text;
     font-weight: 600;
+    color: #2c3639c0;
   }
 
   & &__text-font {
