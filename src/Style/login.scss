@@ -14,7 +14,7 @@
   //   rgba(52, 73, 85, 1) 75%
   // );
 
-  background-image: url("src/Img/wallpaper.svg");
+  background-image: url("../Img/wallpaper.svg");
   background-size: cover;
   background-repeat: no-repeat;
 
@@ -41,7 +41,7 @@
     align-items: center;
     width: clamp(150px, 100%, 80%);
     border-radius: 10px;
-    background-image: url("src/Img/logo-container.svg");
+    background-image: url("../Img/logo-container.svg");
     background-size: contain;
     // background-repeat: no-repeat;
 
