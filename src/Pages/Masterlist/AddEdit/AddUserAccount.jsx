@@ -17,7 +17,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { ArrowBackIosNewRounded } from "@mui/icons-material";
+import {
+  ArrowBackIosNewRounded,
+  ArrowForwardIosRounded,
+} from "@mui/icons-material";
 import { createFilterOptions } from "@mui/material/Autocomplete";
 
 import { closeDrawer } from "../../../Redux/StateManagement/drawerSlice";
@@ -204,7 +207,7 @@ const AddUserAccount = (props) => {
           className="add-userAccount__back"
           onClick={handleCloseDrawer}
         >
-          <ArrowBackIosNewRounded color="secondary" />
+          <ArrowForwardIosRounded color="secondary" />
         </IconButton>
 
         <Typography

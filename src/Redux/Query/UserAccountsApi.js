@@ -5,6 +5,7 @@ export const userAccountsApi = createApi({
     tagTypes: ["User"],
     
     baseQuery: fetchBaseQuery({
+        // baseUrl: "http://10.10.8.26:8000/api",
         baseUrl: "http://127.0.0.1:8000/api/",
         prepareHeaders: (headers) => {
             const token = localStorage.getItem('token')

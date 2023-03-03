@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import moment from "moment";
 import ActionMenu from "./ActionMenu";
+import Moment from "moment";
 
 import {
   Box,
@@ -77,7 +77,7 @@ const CustomTableCollapse = (props) => {
         </TableCell>
 
         <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-          Date
+          {Moment(data.created_at).format("MMM DD, YYYY")}
         </TableCell>
 
         <TableCell className="mcontainer__tr-cell">
@@ -212,7 +212,7 @@ const CustomTableCollapse = (props) => {
                       </TableCell>
 
                       <TableCell className="mcontainer__tr-cell mcontainer__text-center">
-                        {moment(data.minor_category.created_at).format(
+                        {Moment(data.minor_category.created_at).format(
                           "MMM DD, YYYY"
                         )}
                       </TableCell>

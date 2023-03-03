@@ -8,7 +8,11 @@ import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { removeUserDetails } from "../Redux/StateManagement/userLogin";
 import { toggleSidebar } from "../Redux/StateManagement/sidebar";
-import { NotificationsRounded, Padding } from "@mui/icons-material";
+import {
+  KeyboardDoubleArrowLeftRounded,
+  NotificationsRounded,
+  Padding,
+} from "@mui/icons-material";
 
 import {
   MenuRounded,
@@ -131,7 +135,7 @@ const Navbar = () => {
           <Box>
             {collapse ? (
               <IconButton onClick={handleMenuCollapse}>
-                <ArrowBackIosRounded />
+                <KeyboardDoubleArrowLeftRounded />
               </IconButton>
             ) : (
               <IconButton onClick={handleMenuCollapse}>

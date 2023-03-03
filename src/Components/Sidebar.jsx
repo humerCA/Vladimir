@@ -45,6 +45,7 @@ import {
   PlaylistRemoveRounded,
   SummarizeRounded,
   ArrowBackIosRounded,
+  KeyboardDoubleArrowLeftRounded,
 } from "@mui/icons-material";
 
 const Sidebar = () => {
@@ -77,7 +78,6 @@ const Sidebar = () => {
       label: "Masterlist",
       icon: ListAlt,
       path: "/masterlist",
-      // path: "/masterlist/modules",
       permission: [],
       children: [
         {
@@ -110,12 +110,12 @@ const Sidebar = () => {
           path: "/masterlist/supplier",
           permission: [],
         },
-        {
-          label: "Asset Registration",
-          icon: NoteAddRounded,
-          path: "masterlist/create-asset-registration",
-          permission: [],
-        },
+        // {
+        //   label: "Asset Registration",
+        //   icon: NoteAddRounded,
+        //   path: "masterlist/create-asset-registration",
+        //   permission: [],
+        // },
       ],
       open: masterlistCollapse,
       setter: () => {
@@ -258,11 +258,11 @@ const Sidebar = () => {
           {collapse ? (
             <IconButton
               className="sidebar__closeBtn"
-              sx={{ position: "absolute", right: 10, top: 10, zIndex: 2 }}
+              sx={{ position: "absolute", right: 10, top: 39, zIndex: 2 }}
               onClick={handleMenuCollapse}
               size="small"
             >
-              <ArrowBackIosRounded />
+              <KeyboardDoubleArrowLeftRounded />
             </IconButton>
           ) : null}
           <Box className="sidebar__logo-container">
@@ -280,7 +280,7 @@ const Sidebar = () => {
                 zIndex: 0,
                 fontFamily: "Josefin Sans",
                 fontSize: "22px",
-                letterSpacing: "6px",
+                // letterSpacing: "6px",
                 pl: 2.5,
                 userSelect: "none",
               }}
